@@ -1,4 +1,4 @@
-import 'package:flutter_application/models/pregunta_video.dart';
+import 'package:flutter_application/models/PreguntaVideo.dart';
 import 'package:flutter_application/requests/request_preguntas_video.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';

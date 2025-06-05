@@ -4,8 +4,12 @@ import 'package:flutter_application/controllers/controller_persona.dart';
 import 'package:flutter_application/models/persona.dart';
 import 'package:get/get.dart';
 
+
+
 class ListaPersonasScreen extends StatelessWidget {
   final PersonaController personaController = Get.put(PersonaController());
+
+  ListaPersonasScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

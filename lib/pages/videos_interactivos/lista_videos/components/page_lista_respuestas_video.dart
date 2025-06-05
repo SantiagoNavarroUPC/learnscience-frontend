@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 class PreguntasVideoPage extends StatelessWidget {
   final PreguntaVideoController preguntaVideoController = Get.put(PreguntaVideoController());
 
+  PreguntasVideoPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     preguntaVideoController.obtenerPreguntasVideo();
@@ -84,7 +86,7 @@ class PreguntasVideoPage extends StatelessWidget {
                             color: Colors.grey.withOpacity(0.3),
                             spreadRadius: 2,
                             blurRadius: 6,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
@@ -96,7 +98,7 @@ class PreguntasVideoPage extends StatelessWidget {
                             // Video Title
                             Text(
                               'Video: ${pregunta.idVideosObject?.nombre ?? "Sin nombre"}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: gColorTheme1_700,
@@ -107,7 +109,7 @@ class PreguntasVideoPage extends StatelessWidget {
                             // User Email
                             Text(
                               'Correo del Usuario: ${pregunta.idUsuarioObject?.correo ?? "Sin correo"}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: gTextColor,
                               ),
@@ -142,7 +144,7 @@ class PreguntasVideoPage extends StatelessWidget {
       children: [
         Text(
           '$title:',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: gColorTheme1_700,

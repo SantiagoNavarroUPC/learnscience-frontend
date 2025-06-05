@@ -1,10 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/controllers/controller_persona.dart';
 import 'package:flutter_application/controllers/controller_pregunta_video.dart';
 import 'package:flutter_application/controllers/controller_unidad.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
 import 'package:flutter_application/controllers/controller_video.dart';
+import 'package:flutter_application/pages/cuestionario/agregar_cuestionario/page_agregar_cuestionario.dart';
+import 'package:flutter_application/pages/cuestionario/lista_cuestionario/page_lista_cuestionario_estudiante.dart';
+import 'package:flutter_application/pages/cuestionario/lista_cuestionario/page_lista_cuestionario_profesor.dart';
 import 'package:flutter_application/pages/home_teacher/page_home_profesor.dart';
 import 'package:flutter_application/pages/home_student/page_home_estudiante.dart';
 import 'package:flutter_application/pages/login/page_login.dart';
@@ -75,7 +79,10 @@ class MyApp extends StatelessWidget {
         "/videos_interactivos_profesor": (context) => ListaVideosProfesor(),
         "/videos_interactivos_estudiante": (context) => ListaVideosEstudiante(area: '',),
         "/añadir_video": (context) =>const VideoAdd(),
-        "/respuestas_videos":(context) => PreguntasVideoPage()
+        "/respuestas_videos":(context) => PreguntasVideoPage(),
+        "/cuestionarios_interactivos_profesor": (context) => ListaCuestionariosProfesor(),
+        "/cuestionarios_interactivos_estudiante": (context) => ListaCuestionariosEstudiante(area: ''),
+        "/añadir_cuestionario": (context) =>const CuestionarioAdd(),
       },
     );
   }

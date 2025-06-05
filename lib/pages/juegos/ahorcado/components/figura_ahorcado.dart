@@ -5,7 +5,7 @@ import 'package:flutter_application/pages/juegos/ahorcado/ahorcado.dart';
 class HangmanFigure extends StatelessWidget {
   final int tries;
 
-  const HangmanFigure({required this.tries});
+  const HangmanFigure({super.key, required this.tries});
 
   @override
   Widget build(BuildContext context) {

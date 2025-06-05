@@ -3,15 +3,17 @@ import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/controllers/controller_unidad.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
 import 'package:flutter_application/pages/unidades/lista_unidades/components/vista_documento.dart';
-import 'package:get/get.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ListaUnidadesProfesor extends StatelessWidget {
   final UnidadController unidadController = Get.put(UnidadController());
 
+  ListaUnidadesProfesor({super.key}); 
+
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
   UsuarioController usuarioController = Get.find<UsuarioController>();
   final rol = usuarioController.usuario.value?.tipo;
   String? areaSeleccionada = 'biologia'; // Área predeterminada para el filtro

@@ -13,7 +13,7 @@ import 'package:flutter_application/pages/juegos/ahorcado/components/teclado.dar
 class AhorcadoApp extends StatefulWidget {
   final String area; // Añadido
 
-  AhorcadoApp({required this.area}); // Constructor actualizado
+  const AhorcadoApp({super.key, required this.area}); // Constructor actualizado
 
   @override
   _AhorcadoAppState createState() => _AhorcadoAppState();

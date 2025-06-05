@@ -8,6 +8,8 @@ class ListaVideosProfesor extends StatelessWidget {
   final VideoController videoController = Get.put(VideoController());  // Hacer que el área seleccionada sea reactiva
   final RxString areaSeleccionada = 'biologia'.obs;
 
+  ListaVideosProfesor({super.key});
+
   @override
 Widget build(BuildContext context) {
   videoController.obtenerVideosPorTipo(area: areaSeleccionada.value);
