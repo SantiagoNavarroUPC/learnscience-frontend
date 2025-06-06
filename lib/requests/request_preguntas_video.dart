@@ -29,10 +29,10 @@ class PreguntaVideoRequest {
     }
   }
 
-  Future<List<PreguntaVideoModel>> obtenerPreguntasVideo() async {
+  Future<List<PreguntaVideoModel>> obtenerPreguntasVideo(int videoId) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/ListarPreguntasVideos'),
+        Uri.parse('$baseUrl/ListarPreguntasVideos/$videoId'),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -47,7 +47,6 @@ class PreguntaVideoRequest {
       throw Exception('Error en la obtención de preguntas de video: $e');
     }
   }
-
   Future<List<PreguntaVideoModel>> obtenerPreguntasVideoActivas() async {
     try {
       final response = await http.get(

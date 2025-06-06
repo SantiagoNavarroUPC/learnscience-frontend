@@ -5,21 +5,24 @@ import 'package:get/get.dart';
 
 
 class PreguntasVideoPage extends StatelessWidget {
+  final int videoId;
   final PreguntaVideoController preguntaVideoController = Get.put(PreguntaVideoController());
 
-  PreguntasVideoPage({super.key});
+  PreguntasVideoPage({super.key, required this.videoId});
 
   @override
   Widget build(BuildContext context) {
-    preguntaVideoController.obtenerPreguntasVideo();
+  preguntaVideoController.obtenerPreguntasVideo(videoId);
+
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Respuestas de las preguntas de los videos',
+          'Respuestas de las preguntas',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
         centerTitle: true,
@@ -95,17 +98,6 @@ class PreguntasVideoPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Video Title
-                            Text(
-                              'Video: ${pregunta.idVideosObject?.nombre ?? "Sin nombre"}',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: gColorTheme1_700,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-
                             // User Email
                             Text(
                               'Correo del Usuario: ${pregunta.idUsuarioObject?.correo ?? "Sin correo"}',

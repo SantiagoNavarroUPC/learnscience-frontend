@@ -3,6 +3,7 @@ import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/controllers/controller_pregunta_video.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
 import 'package:flutter_application/controllers/controller_video.dart';
+import 'package:flutter_application/pages/videos_interactivos/lista_videos/components/page_lista_respuestas_video.dart';
 import 'package:get/get.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
@@ -111,7 +112,12 @@ class _InteractiveVideoPageState extends State<InteractiveVideoPage> {
               icon: const Icon(Icons.list_alt_rounded),
               onPressed: () {
                 _youtubePlayerController.pause();
-                Navigator.pushNamed(context, "/respuestas_videos");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PreguntasVideoPage(videoId: widget.idVideo!),
+                  ),
+                );
               },
             ),
         ],

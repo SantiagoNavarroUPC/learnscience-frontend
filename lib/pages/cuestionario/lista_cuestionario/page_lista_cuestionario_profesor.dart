@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/controllers/controller_cuestionario.dart';
+import 'package:flutter_application/pages/cuestionario/agregar_pregunta_cuestionario/page_agregar_pregunta.dart';
 import 'package:get/get.dart';
+
 
 
 class ListaCuestionariosProfesor extends StatelessWidget {
@@ -165,13 +167,51 @@ class ListaCuestionariosProfesor extends StatelessWidget {
                                     colorText: Colors.white,
                                   );
                                 } else {
-                                  Navigator.pushNamed(
-                                    context,
-                                    "/resolver_cuestionario",
-                                    arguments: cuestionario,
-                                  );
-                                }
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text('Seleccione una opción'),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            ListTile(
+                                              leading: Icon(Icons.add_circle_outline, color: gBackgroundColor),
+                                              title: Text('Agregar nueva pregunta'),
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => PreguntaCuestionarioAdd(
+                                                      idCuestionario: cuestionario.idCuestionario ?? 0, // o cuestionario.id según tu modelo
+                                                      idUsuario: cuestionario.idUsuario ?? 0, // o cuestionario.idUsuario según tu modelo
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            Divider(),
+                                            ListTile(
+                                              leading: Icon(Icons.visibility, color: gBackgroundColor),
+                                              title: Text('Vista previa'),
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  '/vista_previa_cuestionario',
+                                                  arguments: cuestionario,
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+
                               },
+
+
                             );
                           },
                         ),

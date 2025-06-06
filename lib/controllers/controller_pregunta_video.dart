@@ -30,23 +30,23 @@ class PreguntaVideoController extends GetxController {
     
   }
 
-  Future<void> obtenerPreguntasVideo() async {
-    try {
-      isLoading.value = true;
-      var listaPreguntas = await _preguntaService.obtenerPreguntasVideo();
-      preguntas.value = listaPreguntas;
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'No se pudieron obtener las preguntas de video',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-    } finally {
-      isLoading.value = false;
-    }
+  Future<void> obtenerPreguntasVideo(int videoId) async {
+  try {
+    isLoading.value = true;
+    var listaPreguntas = await _preguntaService.obtenerPreguntasVideo(videoId);
+    preguntas.value = listaPreguntas;
+  } catch (e) {
+    Get.snackbar(
+      'Error',
+      'No se pudieron obtener las preguntas de video',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+  } finally {
+    isLoading.value = false;
   }
+}
 
   Future<void> obtenerPreguntasVideoActivas() async {
     try {

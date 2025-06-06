@@ -3,6 +3,7 @@ import 'package:flutter_application/constants.dart';
 
 const Color cursorColor = Color.fromARGB(255, 1, 79, 66);
 
+
 final ThemeData appTheme = ThemeData(
   primarySwatch: Colors.teal,
   hintColor: cursorColor,

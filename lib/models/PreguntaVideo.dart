@@ -39,11 +39,14 @@ class PreguntaVideoModel {
       respuesta3: json['respuesta3'],
       calificacion: (json['calificacion'] as num?)?.toDouble(),
       eliminado: json['eliminado'],
-      idVideosObject: VideoModel.fromJson(json['idVideosObject']),
-      idUsuarioObject: UsuarioModel.fromJson(json['idUsuarioObject']),
+      idVideosObject: json['idVideoNavigation'] != null
+          ? VideoModel.fromJson(json['idVideoNavigation'])
+          : null,
+      idUsuarioObject: json['idUsuarioNavigation'] != null
+          ? UsuarioModel.fromJson(json['idUsuarioNavigation'])
+          : null,
     );
   }
-
   // Método toJson actualizado
   Map<String, dynamic> toJson() {
     return {
