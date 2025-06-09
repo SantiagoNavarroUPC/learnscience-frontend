@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/controllers/controller_cuestionario.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
+import 'package:flutter_application/pages/cuestionario/resolver_cuestionario/page_resolver_cuestionario.dart';
 import 'package:get/get.dart';
 
 class ListaCuestionariosEstudiante extends StatelessWidget {
@@ -143,7 +144,17 @@ class ListaCuestionariosEstudiante extends StatelessWidget {
                               colorText: Colors.white,
                             );
                           } else {
-                                      }
+                            Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ResolverCuestionarioPage(
+                                    idCuestionario: cuestionario.idCuestionario ?? 0,
+                                    tiempoEnSegundos: (cuestionario.tiempo).toInt(),
+                                  ),
+                                ),
+                              );
+                          }
                         },
                       );
                     },

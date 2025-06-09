@@ -31,10 +31,10 @@ class _PreguntaCuestionarioAddState extends State<PreguntaCuestionarioAdd> {
   String? _opcionAbcSeleccionada;
 
   final List<String> _tipos = [
-    'preguntas abc',
-    'seleccion multiple',
-    'falso o verdadero',
-    'abierta'
+    'Preguntas abc',
+    'Seleccion multiple',
+    'Falso o verdadero',
+    'Abierta'
   ];
   String? _tipoSeleccionado;
 

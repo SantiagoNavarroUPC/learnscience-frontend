@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/controllers/controller_cuestionario.dart';
 import 'package:flutter_application/pages/cuestionario/agregar_pregunta_cuestionario/page_agregar_pregunta.dart';
+import 'package:flutter_application/pages/cuestionario/resolver_cuestionario/page_resolver_cuestionario.dart';
 import 'package:get/get.dart';
 
 
@@ -195,12 +196,17 @@ class ListaCuestionariosProfesor extends StatelessWidget {
                                               leading: Icon(Icons.visibility, color: gBackgroundColor),
                                               title: Text('Vista previa'),
                                               onTap: () {
-                                                Navigator.pop(context);
-                                                Navigator.pushNamed(
-                                                  context,
-                                                  '/vista_previa_cuestionario',
-                                                  arguments: cuestionario,
-                                                );
+                                                 Navigator.pop(context);
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => ResolverCuestionarioPage(
+                                                        idCuestionario: cuestionario.idCuestionario ?? 0,
+                                                        tiempoEnSegundos: (cuestionario.tiempo).toInt(),
+                                                      ),
+                                                    ),
+                                                  );
+                                                                                            
                                               },
                                             ),
                                           ],

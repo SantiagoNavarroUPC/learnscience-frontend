@@ -12,8 +12,11 @@ import 'package:flutter_application/pages/cuestionario/agregar_cuestionario/page
 import 'package:flutter_application/pages/cuestionario/agregar_pregunta_cuestionario/page_agregar_pregunta.dart';
 import 'package:flutter_application/pages/cuestionario/lista_cuestionario/page_lista_cuestionario_estudiante.dart';
 import 'package:flutter_application/pages/cuestionario/lista_cuestionario/page_lista_cuestionario_profesor.dart';
+import 'package:flutter_application/pages/cuestionario/resolver_cuestionario/page_resolver_cuestionario.dart';
 import 'package:flutter_application/pages/home_teacher/page_home_profesor.dart';
 import 'package:flutter_application/pages/home_student/page_home_estudiante.dart';
+import 'package:flutter_application/pages/juegos/ahorcado/ahorcado.dart';
+import 'package:flutter_application/pages/juegos/lista_juegos/page_lista_juegos.dart';
 import 'package:flutter_application/pages/login/page_login.dart';
 import 'package:flutter_application/pages/login/page_registrarse.dart';
 import 'package:flutter_application/pages/page_lista_persona.dart';
@@ -89,6 +92,9 @@ class MyApp extends StatelessWidget {
         "/cuestionarios_interactivos_estudiante": (context) => ListaCuestionariosEstudiante(area: ''),
         "/añadir_cuestionario": (context) =>const CuestionarioAdd(),
         "/añadir_pregunta_cuestionario": (context) => const PreguntaCuestionarioAdd(idCuestionario: 0, idUsuario: 0),
+        "/resolver_cuestionario": (context) => const ResolverCuestionarioPage(idCuestionario: 0, tiempoEnSegundos: 0,),
+        "/videojuegos": (context) => const ListaVideojuegosPage(materiaEstudiante: ''),
+        "/juego_ahorcado": (context) => const AhorcadoApp(area: '',)
       },
     );
   }

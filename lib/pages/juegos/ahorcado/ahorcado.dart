@@ -4,24 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application/components/coustom_bottom_nav_bar.dart';
 import 'package:flutter_application/constants.dart';
+import 'package:flutter_application/controllers/controller_usuario.dart';
 import 'package:flutter_application/enums.dart';
 import 'package:flutter_application/models/juego.dart';
 import 'package:flutter_application/pages/juegos/ahorcado/components/figura_ahorcado.dart';
 import 'package:flutter_application/pages/juegos/ahorcado/components/letter_grid.dart';
 import 'package:flutter_application/pages/juegos/ahorcado/components/teclado.dart';
+import 'package:get/get.dart';
 
 class AhorcadoApp extends StatefulWidget {
-  final String area; // Añadido
+  final String area;
+  
 
-  const AhorcadoApp({super.key, required this.area}); // Constructor actualizado
+  const AhorcadoApp({super.key, required this.area});
 
   @override
-  _AhorcadoAppState createState() => _AhorcadoAppState();
+  State<AhorcadoApp> createState() => _AhorcadoAppState();
 }
 
 
 class _AhorcadoAppState extends State<AhorcadoApp> {
-  String selectedSubject = 'biologia';
+  final UsuarioController usuarioController = Get.find<UsuarioController>();
+  
+  String? areaSeleccionada;
   String word = '';
   List<String> alphabets = List.generate(26, (index) => String.fromCharCode(index + 65));
   Map<String, dynamic> subjects = {};
@@ -32,11 +37,18 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
   int _remainingTime = 30;
   String hint = '';
 
+  final List<String> areasDisponibles = ['biologia', 'quimica', 'fisica'];
+
   @override
   void initState() {
     super.initState();
+    areaSeleccionada = areasDisponibles.contains(widget.area)
+        ? widget.area
+        : areasDisponibles.first;
+
     loadJsonData();
-  }
+}
+
 
   @override
   void dispose() {
@@ -46,7 +58,7 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
 
   void startGame() {
     if (subjects.isNotEmpty) {
-      final wordList = subjects[widget.area] as List<dynamic>;
+      final wordList = subjects[areaSeleccionada] as List<dynamic>;
       if (wordList.isEmpty) {
         showGameResultDialog('Error', 'No hay palabras disponibles para el tema seleccionado.');
         return;
@@ -67,35 +79,33 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
     }
   }
 
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (_remainingTime == 0) {
+        timer.cancel();
+        setState(() {
+          gameLost = true;
+          gameStarted = false;
+        });
+        showGameResultDialog('Perdiste', 'La palabra era: $word');
+      } else {
+        setState(() {
+          _remainingTime--;
+        });
+      }
+    });
+  }
 
-
-    void _startTimer() {
-      _timer?.cancel(); // Cancelar cualquier temporizador anterior
-      _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
-        if (_remainingTime == 0) {
-          timer.cancel();
-          setState(() {
-            gameLost = true;
-            gameStarted = false;
-          });
-          showGameResultDialog('Perdiste', 'La palabra era: $word');
-        } else {
-          setState(() {
-            _remainingTime--;
-          });
-        }
-      });
-    }
-
-    Future<void> loadJsonData() async {
+  Future<void> loadJsonData() async {
     final String response = await rootBundle.loadString('assets/palabras.json');
-    final data = await json.decode(response);
+    final data = json.decode(response);
     setState(() {
       subjects = data;
     });
   }
 
-   void showHintDialog() {
+  void showHintDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -105,21 +115,12 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         );
       },
     );
-  }
-
-
-  void onSubjectChanged(String? newSubject) {
-    setState(() {
-      selectedSubject = newSubject!;
-    });
   }
 
   void updateGameState() {
@@ -130,14 +131,14 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
         gameLost = true;
         gameStarted = false;
       });
-      _timer?.cancel(); // Cancelar el temporizador si se pierde
+      _timer?.cancel();
       showGameResultDialog('Perdiste', 'La palabra era: $word');
     } else if (word.split('').every((char) => Game.selectedChar.contains(char)) && !gameWon) {
       setState(() {
         gameWon = true;
         gameStarted = false;
       });
-      _timer?.cancel(); // Cancelar el temporizador si se gana
+      _timer?.cancel();
       showGameResultDialog('¡Ganaste!', '¡Felicidades! Has adivinado la palabra.');
     }
   }
@@ -153,9 +154,7 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
             actions: <Widget>[
               TextButton(
                 child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+                onPressed: () => Navigator.of(context).pop(),
               ),
             ],
           );
@@ -163,6 +162,7 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
       );
     });
   }
+
   @override
   Widget build(BuildContext context) {
     updateGameState();
@@ -172,103 +172,71 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
           "Juego del Ahorcado",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        elevation: 0,
         centerTitle: true,
+        elevation: 0,
         backgroundColor: Colors.transparent,
       ),
       body: subjects.isEmpty
-        ? const Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 35.0),
-                        child: Text(
-                          widget.area.toUpperCase(), // Mostrar el área seleccionada
-                          style: const TextStyle(
-                            fontSize: 20.0,
-                            color: gTextColor, // Color de texto
-                          ),
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          areaSeleccionada!.toUpperCase(),
+                          style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: IconButton(
-                          icon: const Icon(Icons.play_arrow, size: 30.0, color: gTextColor), // Ícono de reproducción
+                        const SizedBox(width: 12),
+                        IconButton(
+                          icon: const Icon(Icons.play_arrow),
                           onPressed: startGame,
-                          padding: const EdgeInsets.all(10.0), // Espacio alrededor del ícono
-                          color: gButtonColor, // Fondo del ícono
-                          iconSize: 30.0, 
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        const SizedBox(width: 12),
+                        Row(
                           children: [
-                            const Icon(
-                              Icons.access_time,
-                              color: Colors.black,
-                              size: 25.0,
-                            ),
-                            const SizedBox(width: 8.0),
+                            const Icon(Icons.access_time),
+                            const SizedBox(width: 4),
                             Text(
                               '$_remainingTime s',
-                              style: const TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),      
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 6.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.lightbulb_outline),
-                              tooltip: 'Mostrar pista',
-                              onPressed: showHintDialog,
-                            ),            
-                          ],
+                        IconButton(
+                          icon: const Icon(Icons.lightbulb_outline),
+                          onPressed: showHintDialog,
+                          tooltip: 'Mostrar pista',
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                if (gameStarted) ...[
-                  LetterGrid(word: word),
-                  HangmanFigure(tries: Game.tries),
-                  Keyboard(
-                    alphabets: alphabets,
-                    onLetterPressed: (letter) {
-                      setState(() {
-                        Game.selectedChar.add(letter);
-                        if (!word.split('').contains(letter.toUpperCase())) {
-                          Game.tries++;
-                        }
-                        updateGameState();
-                      });
-                    },
-                    selectedLetters: List.from(Game.selectedChar),
-                  ),
+                  if (gameStarted) ...[
+                    LetterGrid(word: word),
+                    HangmanFigure(tries: Game.tries),
+                    Keyboard(
+                      alphabets: alphabets,
+                      onLetterPressed: (letter) {
+                        setState(() {
+                          Game.selectedChar.add(letter);
+                          if (!word.contains(letter)) Game.tries++;
+                          updateGameState();
+                        });
+                      },
+                      selectedLetters: List.from(Game.selectedChar),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
       bottomNavigationBar: const CustomBottomNavBar(selectedMenu: MenuState.game),
     );
   }
 }
+
+
 
 Widget letterWidget(String character, bool hidden) {
   return Container(

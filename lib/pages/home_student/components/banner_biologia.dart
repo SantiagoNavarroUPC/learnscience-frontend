@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/pages/cuestionario/lista_cuestionario/page_lista_cuestionario_estudiante.dart';
+import 'package:flutter_application/pages/juegos/lista_juegos/page_lista_juegos.dart';
 import 'package:flutter_application/pages/unidades/lista_unidades/page_lista_unidades_estudiante.dart';
 import 'package:flutter_application/pages/videos_interactivos/lista_videos/page_lista_videos_estudiante.dart';
 import '../../../size_config.dart';
@@ -89,10 +90,12 @@ class BannerBiologia extends StatelessWidget {
                     ),
                     ListTile(
                       onTap: () {
-                        /*Navigator.push(
+                        Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => AhorcadoApp(area: 'biologia')),
-                        );*/
+                          MaterialPageRoute(
+                            builder: (context) => const ListaVideojuegosPage(materiaEstudiante: 'biologia'),
+                          ),
+                        );
                       },
                       leading: const Icon(Icons.gamepad), // Ícono para juegos interactivos
                       title: Text(

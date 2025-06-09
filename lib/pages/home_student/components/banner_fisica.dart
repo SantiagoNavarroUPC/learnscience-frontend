@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/pages/cuestionario/lista_cuestionario/page_lista_cuestionario_estudiante.dart';
+import 'package:flutter_application/pages/juegos/lista_juegos/page_lista_juegos.dart';
 import 'package:flutter_application/pages/unidades/lista_unidades/page_lista_unidades_estudiante.dart';
 import 'package:flutter_application/pages/videos_interactivos/lista_videos/page_lista_videos_estudiante.dart';
 import '../../../constants.dart';
@@ -89,7 +90,12 @@ class BannerFisica extends StatelessWidget {
                     ),
                     ListTile(
                       onTap: () {
-                         
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ListaVideojuegosPage(materiaEstudiante: 'fisica'),
+                          ),
+                        ); 
                       },
                       leading: const Icon(Icons.gamepad), // Ícono para juegos interactivos
                       title: Text(
