@@ -102,56 +102,32 @@ class CuestionarioController extends GetxController {
   }
 
   Future<bool> actualizarCuestionario(CuestionarioModel cuestionario) async {
-    isLoading.value = true;
     try {
-      final actualizado = await _cuestionarioService.editarCuestionario(cuestionario);
-      if (actualizado) {
-        Get.snackbar('Éxito', 'Cuestionario actualizado correctamente',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: gColorTheme1_600,
-          colorText: Colors.white,
-        );
-      } else {
-        Get.snackbar('Error', 'No se pudo actualizar el cuestionario',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: gColorThemeError,
-          colorText: Colors.white,
-        );
-      }
-      return actualizado;
-    } catch (e) {
-      Get.snackbar('Error', 'Error al actualizar: $e',
+    isLoading.value = true;
+    
+    // Se invierte el estado actual (lógica para alternar)
+    final nuevoEstado = !(cuestionario.eliminado ?? false);
+
+    final success = await CuestionarioService().actualizarEstadoCuestionario(cuestionario.idCuestionario ?? 0, nuevoEstado);
+
+    if (success) {
+      // Actualizamos el modelo local si es necesario
+      cuestionario.eliminado = nuevoEstado;
+
+      Get.snackbar(
+        'Éxito',
+        'Estado del video actualizado correctamente',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: gColorThemeError,
+        backgroundColor: gColorTheme1_600,
         colorText: Colors.white,
       );
-      return false;
-    } finally {
-      isLoading.value = false;
     }
-  }
 
-  Future<bool> eliminarCuestionario(int id) async {
-    isLoading.value = true;
-    try {
-      final eliminado = await _cuestionarioService.eliminarCuestionario(id);
-      if (eliminado) {
-        Get.snackbar('Éxito', 'Cuestionario eliminado correctamente',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: gColorTheme1_600,
-          colorText: Colors.white,
-        );
-        return true;
-      } else {
-        Get.snackbar('Error', 'No se pudo eliminar el cuestionario',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: gColorThemeError,
-          colorText: Colors.white,
-        );
-        return false;
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Error al eliminar: $e',
+    return success;
+  } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Ocurrió un error al intentar actualizar el video: $e',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: gColorThemeError,
         colorText: Colors.white,

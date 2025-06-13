@@ -142,17 +142,7 @@ Widget build(BuildContext context) {
                               onChanged: (newValue) {
                                 video.eliminado = newValue;
                                 videoController.actualizarVideo(video).then((success) {
-                                  if (!success) {
-                                    Get.snackbar(
-                                      'Error',
-                                      'No se pudo actualizar el estado del video',
-                                      snackPosition: SnackPosition.BOTTOM,
-                                      backgroundColor: Colors.red,
-                                      colorText: Colors.white,
-                                    );
-                                  } else {
-                                    videoController.obtenerVideosPorTipo(area: areaSeleccionada.value);
-                                  }
+                                  if (success) videoController.obtenerVideosPorTipo(area: areaSeleccionada.value);
                                 });
                               },
                               activeTrackColor: Colors.red,

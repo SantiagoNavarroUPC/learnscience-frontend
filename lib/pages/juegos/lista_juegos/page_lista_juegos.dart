@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
 import 'package:flutter_application/pages/juegos/ahorcado/ahorcado.dart';
+import 'package:flutter_application/pages/juegos/sopa_de_letras/sopa_de_letras.dart';
 import 'package:get/get.dart';
 
 class ListaVideojuegosPage extends StatefulWidget {
   final String? materiaEstudiante;
-
 
   const ListaVideojuegosPage({
     super.key,
@@ -26,6 +26,11 @@ class _ListaVideojuegosPageState extends State<ListaVideojuegosPage> {
       'nombre': 'Juego del Ahorcado',
       'descripcion': 'Adivina la palabra antes de que se complete el ahorcado.',
       'imagen': 'ahorcado.png',
+    },
+    {
+      'nombre': 'Sopa de Letras',
+      'descripcion': 'Encuentra las palabras escondidas en la cuadrícula.',
+      'imagen': 'sopaletras.png',
     },
     {
       'nombre': 'Más Juegos',
@@ -124,10 +129,14 @@ class _ListaVideojuegosPageState extends State<ListaVideojuegosPage> {
                                 : widget.materiaEstudiante ?? 'biologia';
 
                             if (juego['nombre'] == 'Juego del Ahorcado') {
-                            Navigator.push(
-                            context, MaterialPageRoute(
-                                  builder: (context) => AhorcadoApp(area: area),
-                                ),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => AhorcadoApp(area: area)),
+                              );
+                            } else if (juego['nombre'] == 'Sopa de Letras') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => SopaDeLetrasPage(asignatura: area)),
                               );
                             } else if (juego['nombre'] == 'Más Juegos') {
                               showDialog(

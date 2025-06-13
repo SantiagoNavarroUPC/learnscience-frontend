@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 const Color cursorColor = Color.fromARGB(255, 1, 79, 66);
 
@@ -52,3 +54,21 @@ final ThemeData appTheme = ThemeData(
     ),
   ),
 );
+
+class ThemeService {
+  final _themeKey = 'isDarkMode';
+
+  ThemeMode get themeMode {
+    return GetStorage().read(_themeKey) ?? false ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  void switchTheme(bool isDark) {
+    Get.changeThemeMode(isDark ? ThemeMode.dark : ThemeMode.light);
+    GetStorage().write(_themeKey, isDark);
+  }
+
+  bool isDarkMode() {
+    return Get.isDarkMode;
+  }
+}
+

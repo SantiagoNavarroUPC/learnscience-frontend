@@ -40,19 +40,10 @@ class CuestionarioService {
     }
   }
 
-  Future<bool> editarCuestionario(CuestionarioModel cuestionario) async {
+  Future<bool> actualizarEstadoCuestionario(int id, bool estadoActual) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/EditarCuestionario'),
+      Uri.parse('$baseUrl/ActualizarEstado/$id?estadoActual=$estadoActual'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(cuestionario.toJson()),
-    );
-
-    return response.statusCode == 200;
-  }
-
-  Future<bool> eliminarCuestionario(int id) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/EliminarCuestionarioPorEstado/$id'),
     );
 
     return response.statusCode == 200;

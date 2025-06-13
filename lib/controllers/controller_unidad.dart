@@ -78,30 +78,31 @@ class UnidadController extends GetxController {
   }
   Future<bool> actualizarUnidad(UnidadModel unidad) async {
     try {
-      isLoading.value = true; // Inicia la carga
-      bool success = await UnidadRequest().actualizarUnidad(unidad);
-      if (success) {
-        Get.snackbar(
-          'Éxito',
-          'Unidad actualizada correctamente',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: gColorTheme1_600,
-          colorText: Colors.white,
-        );
-      } else {
-        Get.snackbar(
-          'Error',
-          'No se pudo actualizar la unidad',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: gColorThemeError,
-          colorText: Colors.white,
-        );
-      }
-      return success;
-    } catch (e) {
+    isLoading.value = true;
+    
+    // Se invierte el estado actual (lógica para alternar)
+    final nuevoEstado = !(unidad.eliminado ?? false);
+
+    final success = await UnidadRequest().actualizarEstadoUnidad(unidad.idUnidad ?? 0, nuevoEstado);
+
+    if (success) {
+      // Actualizamos el modelo local si es necesario
+      unidad.eliminado = nuevoEstado;
+
+      Get.snackbar(
+        'Éxito',
+        'Estado del video actualizado correctamente',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: gColorTheme1_600,
+        colorText: Colors.white,
+      );
+    }
+
+    return success;
+  } catch (e) {
       Get.snackbar(
         'Error',
-        'Ocurrió un error al intentar actualizar la unidad: $e',
+        'Ocurrió un error al intentar actualizar el video: $e',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: gColorThemeError,
         colorText: Colors.white,
