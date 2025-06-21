@@ -12,6 +12,7 @@ import 'package:flutter_application/controllers/controller_usuario.dart';
 import 'package:flutter_application/controllers/controller_video.dart';
 import 'package:flutter_application/pages/asignaturas/agregar_asignaturas/page_agregar_asignaturas.dart';
 import 'package:flutter_application/pages/calificaciones/page_calificacionesCuestionario.dart';
+import 'package:flutter_application/pages/calificaciones/page_calificacionesTotales.dart';
 import 'package:flutter_application/pages/configuracion/page_configuracion_profesor.dart';
 import 'package:flutter_application/pages/cuestionario/agregar_cuestionario/page_agregar_cuestionario.dart';
 import 'package:flutter_application/pages/cuestionario/agregar_pregunta_cuestionario/page_agregar_pregunta.dart';
@@ -107,6 +108,7 @@ class MyApp extends StatelessWidget {
         "/sopa_de_letras": (context) => const SopaDeLetrasPage(asignatura: '',),
         "/configuracion": (context) => const ConfiguracionPage(),
         "/agregar_asignatura": (context) => const AgregarAsignaturasPage (),
+        "/listar_calificaciones": (context) => const ListaCalificacionesTotalesPage(),
         "/lista_calificaciones_cuestionario": (context) => ListaCalificacionesPage(idCuestionario: 0)
       },
     );

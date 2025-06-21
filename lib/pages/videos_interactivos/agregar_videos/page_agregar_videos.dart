@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
+import 'package:flutter_application/controllers/controller_asignatura.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
 import 'package:flutter_application/controllers/controller_video.dart';
+import 'package:flutter_application/models/Asignatura.dart';
+import 'package:flutter_application/size_config.dart';
 import 'package:get/get.dart';
 
 class VideoAdd extends StatefulWidget {
@@ -16,7 +19,24 @@ class _VideoAddState extends State<VideoAdd> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
-  String? _tipo;
+  String? _tipo; 
+  List<AsignaturaModel> _asignaturas = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarAsignaturas();
+  }
+
+  Future<void> _cargarAsignaturas() async {
+    final controller = Get.put(AsignaturaController());
+    final resultado = await controller.cargarAsignaturas();
+    setState(() {
+      _asignaturas = resultado;
+      _loading = false;
+    });
+  }
 
   VideoController controllerVideo = Get.find<VideoController>();
   UsuarioController usuarioController = Get.find<UsuarioController>();
@@ -133,53 +153,47 @@ class _VideoAddState extends State<VideoAdd> {
                             },
                           ),
                           const SizedBox(height: 16.0),
-                          DropdownButtonFormField<String>(
-                            value: _tipo,
-                            decoration: const InputDecoration(
-                              labelText: 'Tipo de Video',
-                              labelStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.normal),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: gColorTheme1_900),
+                          _loading
+                          ? const CircularProgressIndicator()
+                          : DropdownButtonFormField<String>(
+                              value: _tipo,
+                              decoration: const InputDecoration(
+                                labelText: 'Asignatura',
+                                labelStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: gColorTheme1_900),
+                                ),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black),
+                                ),
                               ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
+                              items: _asignaturas.map((asignatura) {
+                                return DropdownMenuItem<String>(
+                                  value: removerTildes(asignatura.nombre).toLowerCase(),
+                                  child: Text(
+                                    asignatura.nombre ?? '',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor, selecciona una asignatura';
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                setState(() {
+                                  _tipo = value;
+                                });
+                              },
                             ),
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'biologia',
-                                child: Text(
-                                  'Biología',
-                                  style: TextStyle(fontWeight: FontWeight.normal, color: Colors.black),
-                                ),
-                              ),
-                              DropdownMenuItem(
-                                value: 'quimica',
-                                child: Text(
-                                  'Química',
-                                  style: TextStyle(fontWeight: FontWeight.normal, color: Colors.black),
-                                ),
-                              ),
-                              DropdownMenuItem(
-                                value: 'fisica',
-                                child: Text(
-                                  'Física',
-                                  style: TextStyle(fontWeight: FontWeight.normal, color: Colors.black),
-                                ),
-                              ),
-                            ],
-                            validator: (value) {
-                              if (value == null) {
-                                return 'Por favor, selecciona el tipo de video';
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              setState(() {
-                                _tipo = value;
-                              });
-                            },
-                          ),
                           const SizedBox(height: 16.0),
                           TextFormField(
                             controller: _urlController,

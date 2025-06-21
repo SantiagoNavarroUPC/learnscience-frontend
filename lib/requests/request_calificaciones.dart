@@ -20,12 +20,11 @@ class CalificacionesService {
     final response = await http.get(Uri.parse('$baseUrl/ListarCalificaciones'));
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final List lista = data['response'];
-      return lista.map((e) => CalificacionModel.fromJson(e)).toList();
-    } else {
-      throw Exception('Error al obtener las calificaciones');
-    }
+    final List<dynamic> data = jsonDecode(response.body);
+    return data.map((json) => CalificacionModel.fromJson(json)).toList();
+  } else {
+    throw Exception('Error al cargar calificaciones');
+  }
   }
 
  Future<List<CalificacionModel>> ListarCalificacionesporIdCuestionario(int idCuestionario) async {

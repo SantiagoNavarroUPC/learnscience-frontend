@@ -3,28 +3,27 @@ import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/controllers/controller_calificaciones.dart';
 import 'package:get/get.dart';
 
-class ListaCalificacionesPage extends StatefulWidget {
-  final int idCuestionario;
-  const ListaCalificacionesPage({super.key, required this.idCuestionario});
+class ListaCalificacionesTotalesPage extends StatefulWidget {
+  const ListaCalificacionesTotalesPage({super.key});
 
   @override
-  State<ListaCalificacionesPage> createState() => _ListaCalificacionesPageState();
+  State<ListaCalificacionesTotalesPage> createState() => _ListaCalificacionesTotalesPageState();
 }
 
-class _ListaCalificacionesPageState extends State<ListaCalificacionesPage> {
+class _ListaCalificacionesTotalesPageState extends State<ListaCalificacionesTotalesPage> {
   final CalificacionesController calificacionesController = Get.put(CalificacionesController());
 
   @override
   void initState() {
     super.initState();
-    calificacionesController.ListarCalificacionesporIdCuestionario(widget.idCuestionario);
+    calificacionesController.ListarCalificacionesTotales();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Respuesta de Cuestionarios', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        title: const Text('Lista de todas las calificaciones', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
       ),

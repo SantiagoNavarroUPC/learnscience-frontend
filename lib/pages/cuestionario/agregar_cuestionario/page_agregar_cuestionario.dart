@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
+import 'package:flutter_application/controllers/controller_asignatura.dart';
 import 'package:flutter_application/controllers/controller_cuestionario.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
+import 'package:flutter_application/models/Asignatura.dart';
 import 'package:flutter_application/models/Cuestionario.dart';
+import 'package:flutter_application/size_config.dart';
 import 'package:get/get.dart';
 
 class CuestionarioAdd extends StatefulWidget {
@@ -18,6 +21,23 @@ class _CuestionarioAddState extends State<CuestionarioAdd> {
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _tiempoController = TextEditingController();
   String? _tipo;
+  List<AsignaturaModel> _asignaturas = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarAsignaturas();
+  }
+
+  Future<void> _cargarAsignaturas() async {
+    final controller = Get.put(AsignaturaController());
+    final resultado = await controller.cargarAsignaturas();
+    setState(() {
+      _asignaturas = resultado;
+      _loading = false;
+    });
+  }
 
   final CuestionarioController cuestionarioController = Get.find<CuestionarioController>();
   final UsuarioController usuarioController = Get.find<UsuarioController>();
@@ -97,16 +117,46 @@ class _CuestionarioAddState extends State<CuestionarioAdd> {
                               validator: (value) => value!.isEmpty ? 'Ingrese una descripción' : null,
                             ),
                             const SizedBox(height: 16),
-                            DropdownButtonFormField<String>(
+                            _loading
+                          ? const CircularProgressIndicator()
+                          : DropdownButtonFormField<String>(
                               value: _tipo,
-                              decoration: const InputDecoration(labelText: 'Tipo de Cuestionario'),
-                              items: const [
-                                DropdownMenuItem(value: 'biologia', child: Text('Biología')),
-                                DropdownMenuItem(value: 'quimica', child: Text('Química')),
-                                DropdownMenuItem(value: 'fisica', child: Text('Física')),
-                              ],
-                              onChanged: (value) => setState(() => _tipo = value),
-                              validator: (value) => value == null ? 'Seleccione un tipo' : null,
+                              decoration: const InputDecoration(
+                                labelText: 'Asignatura',
+                                labelStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: gColorTheme1_900),
+                                ),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.black),
+                                ),
+                              ),
+                              items: _asignaturas.map((asignatura) {
+                                return DropdownMenuItem<String>(
+                                  value: removerTildes(asignatura.nombre).toLowerCase(),
+                                  child: Text(
+                                    asignatura.nombre ?? '',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor, selecciona una asignatura';
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                setState(() {
+                                  _tipo = value;
+                                });
+                              },
                             ),
                             const SizedBox(height: 16),
                             TextFormField(

@@ -63,7 +63,7 @@ class _ConfiguracionPageState extends State<ConfiguracionPage> {
                     ListTile(
                       leading: const Icon(Icons.grade),
                       title: const Text("Ver Calificaciones"),
-                      onTap: () => Navigator.pushNamed(context, '/ver_calificaciones'),
+                      onTap: () => Navigator.pushNamed(context, '/listar_calificaciones'),
                     ),
                     ListTile(
                       leading: const Icon(Icons.add),

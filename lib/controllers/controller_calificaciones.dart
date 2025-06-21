@@ -39,40 +39,27 @@ class CalificacionesController extends GetxController {
       isLoading.value = false;
     }
   }
-  listarCalificaciones() async {
+  Future<void> ListarCalificacionesTotales() async {
   isLoading.value = true;
   try {
     final resultado = await CalificacionesService().listarTodasCalificaciones();
-    calificaciones.assignAll(resultado); // 👈 actualiza la lista del controlador
-    if (calificaciones.isEmpty) {
-      Get.snackbar('Información', 'No hay calificaciones registradas',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: gColorTheme1_600,
-        colorText: Colors.white,
-      );
-    }
-    return calificaciones;
+
+    calificaciones.value = resultado;
   } catch (e) {
     Get.snackbar('Error', 'Ocurrió un error al obtener las calificaciones: $e',
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: gColorThemeError,
       colorText: Colors.white,
     );
-      return [];
-    } finally {
-      isLoading.value = false;
-    }
+    calificaciones.value = [];
+  } finally {
+    isLoading.value = false;
   }
+}
   Future<void> ListarCalificacionesporIdCuestionario(int idCuestionario) async {
   isLoading.value = true;
   try {
     final resultado = await CalificacionesService().ListarCalificacionesporIdCuestionario(idCuestionario);
-    
-    print("📦 Calificaciones recibidas:");
-    for (var calificacion in resultado) {
-      print(calificacion.runtimeType); // Para saber el tipo (CalificacionModel o Map)
-      print(calificacion.toJson());    // Asegúrate que tu modelo tenga .toJson()
-    }
 
     calificaciones.value = resultado;
   } catch (e) {

@@ -1,24 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
+import 'package:flutter_application/controllers/controller_asignatura.dart';
 import 'package:flutter_application/controllers/controller_unidad.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
+import 'package:flutter_application/models/Asignatura.dart';
 import 'package:flutter_application/pages/unidades/lista_unidades/components/vista_documento.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_application/size_config.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 
-class ListaUnidadesProfesor extends StatelessWidget {
-  final UnidadController unidadController = Get.put(UnidadController());
+class ListaUnidadesProfesor extends StatefulWidget {
+  const ListaUnidadesProfesor({Key? key}) : super(key: key);
 
-  ListaUnidadesProfesor({super.key}); 
+  @override
+  State<ListaUnidadesProfesor> createState() => _ListaUnidadesProfesorState();
+}
+
+class _ListaUnidadesProfesorState extends State<ListaUnidadesProfesor> {
+  final UnidadController unidadController = Get.put(UnidadController());
+  final UsuarioController usuarioController = Get.find<UsuarioController>();
+  String? areaSeleccionada = 'biologia';
+  List<AsignaturaModel> _asignaturas = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarAsignaturas();
+    unidadController.obtenerUnidadesPorTipo(area: areaSeleccionada);
+  }
+
+  Future<void> _cargarAsignaturas() async {
+    final controller = Get.put(AsignaturaController());
+    final resultado = await controller.cargarAsignaturas();
+    setState(() {
+      _asignaturas = resultado;
+      _loading = false;
+    });
+  }
+
+  Color getColorForArea(String area) {
+  if (area.isEmpty) return gColorTheme1_600;
+
+  final asignatura = _asignaturas.firstWhere(
+    (a) => removerTildes(a.nombre).toLowerCase() == area.toLowerCase(),
+    orElse: () => AsignaturaModel(idAsignatura: 0, idUsuario: 0, nombre: '', color: 'Grey'),
+  );
+  final match = colores.firstWhere(
+    (c) => (c['name'] as String).toLowerCase() == (asignatura.color ?? '').toLowerCase(),
+    orElse: () => {'color': gColorTheme1_600},
+  );
+    return match['color'] as Color;
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
-    UsuarioController usuarioController = Get.find<UsuarioController>();
     final rol = usuarioController.usuario.value?.tipo;
-    String? areaSeleccionada = 'biologia'; // Área predeterminada para el filtro
-    UnidadController unidadController = Get.find<UnidadController>();
-    unidadController.obtenerUnidadesPorTipo(area: areaSeleccionada);
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +108,7 @@ class ListaUnidadesProfesor extends StatelessWidget {
                 ),
               ),
               Obx(() {
-                if (unidadController.isLoading.value) {
+                if (unidadController.isLoading.value || _loading) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
@@ -78,19 +118,6 @@ class ListaUnidadesProfesor extends StatelessWidget {
 
                 if (unidadController.unidades.isEmpty) {
                   return const Center(child: Text('No hay unidades disponibles para esta área'));
-                }
-
-                Color getColorForArea(String area) {
-                  switch (area.toLowerCase()) {
-                    case 'biologia':
-                      return gColorBanner1;
-                    case 'quimica':
-                      return gColorBanner2;
-                    case 'fisica':
-                      return gColorBanner3;
-                    default:
-                      return gColorTheme1_600;
-                  }
                 }
 
                 return Column(
@@ -103,22 +130,25 @@ class ListaUnidadesProfesor extends StatelessWidget {
                           child: SizedBox(
                             child: DropdownButton<String>(
                               value: areaSeleccionada,
-                              onChanged: (String? nuevaArea) {
-                                if (nuevaArea != null) {
-                                  areaSeleccionada = nuevaArea;
-                                  unidadController.obtenerUnidadesPorTipo(area: areaSeleccionada);
-                                }
-                              },
-                              items: <String>['biologia', 'quimica', 'fisica'].map((String area) {
+                              items: _asignaturas.map((asignatura) {
                                 return DropdownMenuItem<String>(
-                                  value: area,
+                                  value: removerTildes(asignatura.nombre).toLowerCase(),
                                   child: Text(
-                                    area.capitalize!,
-                                    style: const TextStyle(fontSize: 18),
+                                    asignatura.nombre ?? '',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 );
                               }).toList(),
-                              iconSize: 30,
+                              onChanged: (value) {
+                                setState(() {
+                                  areaSeleccionada = value ?? 'biologia';
+                                  unidadController.obtenerUnidadesPorTipo(area: areaSeleccionada);
+                                });
+                              },
                             ),
                           ),
                         ),
@@ -150,7 +180,9 @@ class ListaUnidadesProfesor extends StatelessWidget {
                                   ? Switch(
                                       value: isEliminado,
                                       onChanged: (newValue) {
-                                        unidad.eliminado = newValue;
+                                        setState(() {
+                                          unidad.eliminado = newValue;
+                                        });
                                         unidadController.actualizarUnidad(unidad).then((success) {
                                           if (!success) {
                                             Get.snackbar(
@@ -212,7 +244,13 @@ class ListaUnidadesProfesor extends StatelessWidget {
         ),
       );
     } catch (e) {
-      throw Exception('Error al descargar el PDF: $e');
+      Get.snackbar(
+        'Error',
+        'Error al descargar el PDF: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 }
