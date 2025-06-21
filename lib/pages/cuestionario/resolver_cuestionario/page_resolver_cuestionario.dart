@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/controllers/controller_calificaciones.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
+import 'package:flutter_application/models/Calificaciones.dart';
 import 'package:flutter_application/models/PreguntaCuestionario.dart';
 import 'package:get/get.dart';
 import 'dart:async';
@@ -49,56 +51,76 @@ class _ResolverCuestionarioPageState extends State<ResolverCuestionarioPage> {
     });
   }
 
-  void _finalizarCuestionario() {
-    if (_cuestionarioFinalizado) return;
-    _cuestionarioFinalizado = true;
-    _timer.cancel();
+  void _finalizarCuestionario() async {
+  if (_cuestionarioFinalizado) return;
+  _cuestionarioFinalizado = true;
+  _timer.cancel();
 
-    final total = controlador.preguntas.length;
-    _acertadas = 0;
+  final total = controlador.preguntas.length;
+  _acertadas = 0;
 
-    for (var pregunta in controlador.preguntas) {
-      final id = pregunta.idPreguntaCuestionario;
-      final correcta = pregunta.correcta;
-      final tipo = (pregunta.tipo ?? '').toString().toLowerCase();
-      final respuestaUsuario = _respuestas[id];
+  for (var pregunta in controlador.preguntas) {
+    final id = pregunta.idPreguntaCuestionario;
+    final correcta = pregunta.correcta;
+    final tipo = (pregunta.tipo ?? '').toString().toLowerCase();
+    final respuestaUsuario = _respuestas[id];
 
-      if (tipo == 'seleccion multiple') {
-        final respList = List<String>.from(respuestaUsuario ?? []);
-        final correctaList = (correcta ?? '').toString().split('\$').where((e) => e.trim().isNotEmpty).toList();
+    if (tipo == 'seleccion multiple') {
+      final respList = List<String>.from(respuestaUsuario ?? []);
+      final correctaList = (correcta ?? '').toString().split('\$').where((e) => e.trim().isNotEmpty).toList();
 
-        if (Set.from(respList).containsAll(correctaList) &&
-            Set.from(correctaList).containsAll(respList)) {
-          _acertadas++;
-        }
-      } else if (respuestaUsuario == correcta) {
+      if (Set.from(respList).containsAll(correctaList) &&
+          Set.from(correctaList).containsAll(respList)) {
         _acertadas++;
       }
+    } else if (respuestaUsuario == correcta) {
+      _acertadas++;
     }
-
-    final nota = (_acertadas / total * 100).toStringAsFixed(2);
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Resultado'),
-        content: Text('Obtuviste $_acertadas de $total preguntas correctas.\nNota final: $nota'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              final usuario = usuarioController.usuario.value!;
-              final bool esProfesor = usuario.tipo == 'profesor';
-              if (esProfesor) {
-                Navigator.pushNamed(context, '/cuestionarios_interactivos_profesor');
-              } else {
-                Navigator.pushNamed(context, '/cuestionarios_interactivos_estudiante');
-              }
-            },
-            child: const Text('Aceptar'),
-          ),
-        ],
-      ),
-    );
   }
+
+  final nota = (_acertadas / total * 100).toStringAsFixed(2);
+  final double notaFinal = double.parse(nota);
+
+  final usuario = usuarioController.usuario.value!;
+  final bool esProfesor = usuario.tipo == 'profesor';
+
+  if (!esProfesor) {
+    final calificacionModel = CalificacionModel(
+      idCalificacion: 0,
+      idUsuario: usuario.idUsuario ?? 0,
+      idCuestionario: widget.idCuestionario,
+      calificacion: notaFinal,
+      eliminado: false
+    );
+     // Guardar calificación
+     Get.put(CalificacionesController());
+
+    final calificacionController = Get.find<CalificacionesController>();
+     calificacionController.guardarCalificacion(calificacionModel);
+  }
+
+  // Mostrar resultado
+  Get.dialog(
+    AlertDialog(
+      title: const Text('Resultado'),
+      content: Text('Obtuviste $_acertadas de $total preguntas correctas.\nNota final: $nota'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            if (esProfesor) {
+              Navigator.pushNamed(context, '/menu_profesor');
+            } else {
+              Navigator.pushNamed(context, '/menu_estudiante');
+            }
+          },
+          child: const Text('Aceptar'),
+        ),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildPregunta(PreguntaCuestionarioModel pregunta) {
     final tipo = (pregunta.tipo ?? '').toString().toLowerCase();

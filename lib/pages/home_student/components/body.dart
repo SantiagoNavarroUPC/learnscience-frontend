@@ -1,36 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/pages/home_student/components/banner_biologia.dart';
-import 'package:flutter_application/pages/home_student/components/banner_fisica.dart';
-import 'package:flutter_application/pages/home_student/components/banner_quimica.dart';
-import 'package:flutter_application/size_config.dart';
+import 'package:flutter_application/controllers/controller_asignatura.dart';
+import 'package:flutter_application/models/Asignatura.dart';
+import 'package:flutter_application/pages/home_student/components/banner.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 
 class Body extends StatelessWidget {
   const Body({super.key});
 
+  Future<List<AsignaturaModel>> _cargarAsignaturas() async {
+    final controller = Get.put(AsignaturaController());
+    return await controller.cargarAsignaturas();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-          _buildSection(
-            title: 'Curso de Biología',
-            icon: Icons.category,
-            banner: const BannerBiologia(),
-          ),
-          _buildSection(
-            title: 'Curso de Química',
-            icon: Icons.category,
-            banner: const BannerQuimica(),
-          ),
-          _buildSection(
-            title: 'Curso de Física',
-            icon: Icons.category,
-            banner: const BannerFisica(),
-          ),
-          ],
-        ),
+      child: FutureBuilder<List<AsignaturaModel>>(
+        future: _cargarAsignaturas(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final asignaturas = snapshot.data ?? [];
+
+          return ListView.builder(
+            itemCount: asignaturas.length,
+            itemBuilder: (context, index) {
+              final asignatura = asignaturas[index];
+              return _buildSection(
+                title: 'Curso de ${asignatura.nombre}',
+                icon: Icons.category,
+                banner: BannerAsignatura(asignatura: asignatura),
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -41,7 +52,7 @@ class Body extends StatelessWidget {
     required Widget banner,
   }) {
     return Container(
-      padding: const EdgeInsets.only(left: 8, right: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(5),
@@ -53,19 +64,15 @@ class Body extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(width: 20),
-              Icon(
-                icon,
-                color: Colors.black,
-                size: getProportionateScreenWidth(20),
-              ),
+              Icon(icon, color: Colors.black, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w700,
-                    fontSize: getProportionateScreenWidth(16),
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -75,5 +82,8 @@ class Body extends StatelessWidget {
         ],
       ),
     );
-  }}
+  }
+}
+
+
 

@@ -3,7 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class UnidadRequest {
+class UnidadService {
   final String baseUrl = "http://apirestdatos00.somee.com/api/Unidad";
   final box = GetStorage();
 

@@ -3,7 +3,7 @@ import 'package:flutter_application/models/PreguntaCuestionario.dart';
 import 'package:http/http.dart' as http;
 
 
-class PreguntaCuestionarioRequest {
+class PreguntaCuestionarioService {
   final String baseUrl = "http://apirestdatos00.somee.com/api/PreguntaCuestionario";
 
   // POST: RegistrarPreguntaCuestionario

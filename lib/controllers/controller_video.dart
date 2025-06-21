@@ -10,7 +10,7 @@ class VideoController extends GetxController {
   var hasError = false.obs; 
   var video = Rx<VideoModel?>(null);
 
-  final VideoRequest _videoService = VideoRequest();
+  final VideoService _videoService = VideoService();
 
   Future<bool> registrarVideo(Map<String, dynamic> videoData) async {
     isLoading.value = true;
@@ -35,7 +35,7 @@ class VideoController extends GetxController {
   Future<void> obtenerVideos() async {
     try {
       isLoading.value = true;
-      var listaVideos = await VideoRequest().obtenerVideos();
+      var listaVideos = await VideoService().obtenerVideos();
       videos.value = listaVideos;
     } catch (e) {
       Get.snackbar(
@@ -54,8 +54,8 @@ class VideoController extends GetxController {
     try {
       isLoading.value = true;
       hasError.value = false;
-      
-      var listaVideos = await VideoRequest().obtenerVideos();
+
+      var listaVideos = await VideoService().obtenerVideos();
       if (area != null) {
         listaVideos = listaVideos.where((video) => video.tipo == area).toList();
       }
@@ -81,8 +81,8 @@ class VideoController extends GetxController {
     try {
       isLoading.value = true;
       hasError.value = false;
-      
-      var listaVideos = await VideoRequest().obtenerVideosActivos();
+
+      var listaVideos = await VideoService().obtenerVideosActivos();
       if (area != null) {
         listaVideos = listaVideos.where((video) => video.tipo == area).toList();
       }
@@ -111,7 +111,7 @@ class VideoController extends GetxController {
     // Se invierte el estado actual (lógica para alternar)
     final nuevoEstado = !(video.eliminado ?? false);
 
-    final success = await VideoRequest().actualizarEstadoVideo(video.idVideo ?? 0, nuevoEstado);
+    final success = await VideoService().actualizarEstadoVideo(video.idVideo ?? 0, nuevoEstado);
 
     if (success) {
       // Actualizamos el modelo local si es necesario

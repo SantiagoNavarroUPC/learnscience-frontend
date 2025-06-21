@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_application/models/PreguntaVideo.dart';
 import 'package:http/http.dart' as http;
 
-class PreguntaVideoRequest {
+class PreguntaVideoService {
   final String baseUrl = "http://apirestdatos00.somee.com/api/PreguntaVideos";
 
   Future<bool> registrarPreguntaVideo(Map<String, dynamic> preguntaData) async {

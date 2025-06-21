@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/controllers/controller_cuestionario.dart';
+import 'package:flutter_application/pages/calificaciones/page_calificacionesCuestionario.dart';
 import 'package:flutter_application/pages/cuestionario/agregar_pregunta_cuestionario/page_agregar_pregunta.dart';
 import 'package:flutter_application/pages/cuestionario/resolver_cuestionario/page_resolver_cuestionario.dart';
 import 'package:get/get.dart';
-
-
 
 class ListaCuestionariosProfesor extends StatelessWidget {
   final CuestionarioController cuestionarioController = Get.put(CuestionarioController());
@@ -171,48 +170,64 @@ class ListaCuestionariosProfesor extends StatelessWidget {
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
-                                        title: Text('Seleccione una opción'),
+                                        title: const Text('Seleccione una opción'),
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             ListTile(
                                               leading: Icon(Icons.add_circle_outline, color: gBackgroundColor),
-                                              title: Text('Agregar nueva pregunta'),
+                                              title: const Text('Agregar nueva pregunta'),
                                               onTap: () {
                                                 Navigator.pop(context);
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (context) => PreguntaCuestionarioAdd(
-                                                      idCuestionario: cuestionario.idCuestionario ?? 0, // o cuestionario.id según tu modelo
-                                                      idUsuario: cuestionario.idUsuario ?? 0, // o cuestionario.idUsuario según tu modelo
+                                                      idCuestionario: cuestionario.idCuestionario ?? 0,
+                                                      idUsuario: cuestionario.idUsuario ?? 0,
                                                     ),
                                                   ),
                                                 );
                                               },
                                             ),
-                                            Divider(),
+                                            const Divider(),
                                             ListTile(
                                               leading: Icon(Icons.visibility, color: gBackgroundColor),
-                                              title: Text('Vista previa'),
+                                              title: const Text('Vista previa'),
                                               onTap: () {
-                                                 Navigator.pop(context);
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) => ResolverCuestionarioPage(
-                                                        idCuestionario: cuestionario.idCuestionario ?? 0,
-                                                        tiempoEnSegundos: (cuestionario.tiempo).toInt(),
-                                                      ),
+                                                Navigator.pop(context);
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => ResolverCuestionarioPage(
+                                                      idCuestionario: cuestionario.idCuestionario ?? 0,
+                                                      tiempoEnSegundos: (cuestionario.tiempo).toInt(),
                                                     ),
-                                                  );
-                                                                                            
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            const Divider(),
+                                            ListTile(
+                                              leading: Icon(Icons.list_alt, color: gBackgroundColor),
+                                              title: const Text('Lista de calificaciones'),
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => ListaCalificacionesPage(
+                                                      idCuestionario: cuestionario.idCuestionario ?? 0,
+                                                    ),
+                                                  ),
+                                                );
                                               },
                                             ),
                                           ],
                                         ),
                                       ),
                                     );
+
                                   }
 
                               },

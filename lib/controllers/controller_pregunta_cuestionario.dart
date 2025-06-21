@@ -10,7 +10,7 @@ class PreguntaCuestionarioController extends GetxController {
   var errorMessage = ''.obs;
   var hasError = false.obs;
 
-  final PreguntaCuestionarioRequest _preguntaService = PreguntaCuestionarioRequest();
+  final PreguntaCuestionarioService _preguntaService = PreguntaCuestionarioService();
 
   Future<bool> registrarPreguntaCuestionario(Map<String, dynamic> preguntaData) async {
     isLoading.value = true;

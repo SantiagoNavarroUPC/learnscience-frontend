@@ -10,7 +10,7 @@ class UnidadController extends GetxController {
   var errorMessage = ''.obs;
   var hasError = false.obs; 
 
-  final UnidadRequest _unidadService = UnidadRequest(); // Asegúrate de tener tu servicio configurado
+  final UnidadService _unidadService = UnidadService();
 
   Future<bool> registrarUnidad(Map<String, dynamic> unidadData) async {
     isLoading.value = true;
@@ -35,7 +35,7 @@ class UnidadController extends GetxController {
   Future<void> obtenerUnidades() async {
     try {
       isLoading.value = true;
-      var listaUnidades = await UnidadRequest().obtenerUnidades();
+      var listaUnidades = await UnidadService().obtenerUnidades();
       unidades.value = listaUnidades;
     } catch (e) {
       Get.snackbar(
@@ -55,7 +55,7 @@ class UnidadController extends GetxController {
       isLoading.value = true;
       hasError.value = false;
       
-      var listaUnidades = await UnidadRequest().obtenerUnidades();
+      var listaUnidades = await UnidadService().obtenerUnidades();
       if (area != null) {
         listaUnidades = listaUnidades.where((unidad) => unidad.tipo == area).toList();
       }
@@ -83,7 +83,7 @@ class UnidadController extends GetxController {
     // Se invierte el estado actual (lógica para alternar)
     final nuevoEstado = !(unidad.eliminado ?? false);
 
-    final success = await UnidadRequest().actualizarEstadoUnidad(unidad.idUnidad ?? 0, nuevoEstado);
+    final success = await UnidadService().actualizarEstadoUnidad(unidad.idUnidad ?? 0, nuevoEstado);
 
     if (success) {
       // Actualizamos el modelo local si es necesario

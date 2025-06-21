@@ -8,7 +8,7 @@ class PreguntaVideoController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var hasError = false.obs;
-  final PreguntaVideoRequest _preguntaService = PreguntaVideoRequest();
+  final PreguntaVideoService _preguntaService = PreguntaVideoService();
 
   Future<bool> registrarPreguntaVideo(Map<String, dynamic> preguntaData) async {
     isLoading.value = true;

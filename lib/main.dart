@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application/controllers/controller_asignatura.dart';
+import 'package:flutter_application/controllers/controller_calificaciones.dart';
 import 'package:flutter_application/controllers/controller_cuestionario.dart';
 import 'package:flutter_application/controllers/controller_persona.dart';
 import 'package:flutter_application/controllers/controller_pregunta_cuestionario.dart';
@@ -8,6 +10,8 @@ import 'package:flutter_application/controllers/controller_pregunta_video.dart';
 import 'package:flutter_application/controllers/controller_unidad.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
 import 'package:flutter_application/controllers/controller_video.dart';
+import 'package:flutter_application/pages/asignaturas/agregar_asignaturas/page_agregar_asignaturas.dart';
+import 'package:flutter_application/pages/calificaciones/page_calificacionesCuestionario.dart';
 import 'package:flutter_application/pages/configuracion/page_configuracion_profesor.dart';
 import 'package:flutter_application/pages/cuestionario/agregar_cuestionario/page_agregar_cuestionario.dart';
 import 'package:flutter_application/pages/cuestionario/agregar_pregunta_cuestionario/page_agregar_pregunta.dart';
@@ -59,6 +63,8 @@ void main() async {
   Get.put(PreguntaVideoController());
   Get.put(CuestionarioController());
   Get.put(PreguntaCuestionarioController());
+  Get.put(CalificacionesController());
+  Get.put(AsignaturaController());
 
   runApp(const MyApp());
 }
@@ -98,8 +104,10 @@ class MyApp extends StatelessWidget {
         "/resolver_cuestionario": (context) => const ResolverCuestionarioPage(idCuestionario: 0, tiempoEnSegundos: 0,),
         "/videojuegos": (context) => const ListaVideojuegosPage(materiaEstudiante: ''),
         "/juego_ahorcado": (context) => const AhorcadoApp(area: '',),
-        "sopa_de_letras": (context) => const SopaDeLetrasPage(asignatura: '',),
-        "/configuracion": (context) => const ConfiguracionPage()
+        "/sopa_de_letras": (context) => const SopaDeLetrasPage(asignatura: '',),
+        "/configuracion": (context) => const ConfiguracionPage(),
+        "/agregar_asignatura": (context) => const AgregarAsignaturasPage (),
+        "/lista_calificaciones_cuestionario": (context) => ListaCalificacionesPage(idCuestionario: 0)
       },
     );
   }
