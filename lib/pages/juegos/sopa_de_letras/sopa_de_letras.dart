@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_application/components/coustom_bottom_nav_bar.dart';
+import 'package:flutter_application/enums.dart';
 
 class SopaDeLetrasPage extends StatefulWidget {
   final String asignatura;
@@ -18,6 +21,7 @@ class _SopaDeLetrasPageState extends State<SopaDeLetrasPage> {
 
   List<Offset> seleccionadas = [];
   Timer? validacionTimer;
+  late AudioPlayer _player;
 
   final Map<String, List<String>> bancoPalabras = {
     'biologia': ["CELULA", "ADN", "GEN", "ENZIMA", "REINO", "ORGANO", "CROMOSOMA", "MITOSIS", "ECOLOGIA", "BACTERIA"],
@@ -28,10 +32,15 @@ class _SopaDeLetrasPageState extends State<SopaDeLetrasPage> {
   @override
   void initState() {
     super.initState();
+    _player = AudioPlayer();
     palabras = bancoPalabras[widget.asignatura.toLowerCase()] ?? [];
     grid = List.generate(gridSize, (_) => List.generate(gridSize, (_) => ''));
     colocarPalabras();
     llenarVacios();
+  }
+
+  Future<void> _reproducirSonido(String nombre) async {
+    await _player.play(AssetSource('sounds/$nombre.mp3'));
   }
 
   void colocarPalabras() {
@@ -41,7 +50,7 @@ class _SopaDeLetrasPageState extends State<SopaDeLetrasPage> {
       while (!colocada) {
         int fila = random.nextInt(gridSize);
         int col = random.nextInt(gridSize);
-        int dir = random.nextInt(8); // 8 direcciones
+        int dir = random.nextInt(8);
         int dx = [0, 1, 1, 1, 0, -1, -1, -1][dir];
         int dy = [1, 1, 0, -1, -1, -1, 0, 1][dir];
 
@@ -79,22 +88,19 @@ class _SopaDeLetrasPageState extends State<SopaDeLetrasPage> {
 
   void seleccionarCelda(int fila, int col) {
     final pos = Offset(fila.toDouble(), col.toDouble());
-
-    // Si ya estaba seleccionada, la removemos
     if (seleccionadas.contains(pos)) {
       seleccionadas.remove(pos);
     } else {
       seleccionadas.add(pos);
     }
 
-    // Reiniciar el temporizador
     validacionTimer?.cancel();
     validacionTimer = Timer(const Duration(seconds: 2), validarSeleccion);
 
     setState(() {});
   }
 
-  void validarSeleccion() {
+  void validarSeleccion() async {
     if (seleccionadas.length < 2) return;
 
     seleccionadas.sort((a, b) {
@@ -105,22 +111,42 @@ class _SopaDeLetrasPageState extends State<SopaDeLetrasPage> {
     int dx = (seleccionadas[1].dx - seleccionadas[0].dx).round();
     int dy = (seleccionadas[1].dy - seleccionadas[0].dy).round();
 
-    // Asegurarse que el patrón es consistente
     for (int i = 1; i < seleccionadas.length; i++) {
       int currentDx = (seleccionadas[i].dx - seleccionadas[i - 1].dx).round();
       int currentDy = (seleccionadas[i].dy - seleccionadas[i - 1].dy).round();
       if (currentDx != dx || currentDy != dy) {
+        await _reproducirSonido("error");
         reiniciarSeleccion();
         return;
       }
     }
 
-    // Formar palabra
     String palabra = seleccionadas.map((e) => grid[e.dx.toInt()][e.dy.toInt()]).join('');
 
     if (palabras.contains(palabra) && !palabrasEncontradas.contains(palabra)) {
       palabrasEncontradas.add(palabra);
+      await _reproducirSonido("correcto");
+
+      if (palabrasEncontradas.length == palabras.length) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        await _reproducirSonido("nivel_completado");
+
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('¡Felicidades!'),
+            content: const Text('Has encontrado todas las palabras.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Aceptar'),
+              ),
+            ],
+          ),
+        );
+      }
     } else {
+      await _reproducirSonido("error");
       reiniciarSeleccion();
     }
 
@@ -139,37 +165,35 @@ class _SopaDeLetrasPageState extends State<SopaDeLetrasPage> {
   }
 
   bool esEncontrada(int row, int col) {
-  for (String palabra in palabrasEncontradas) {
-    for (int dir = 0; dir < 8; dir++) {
-      int dx = [0, 1, 1, 1, 0, -1, -1, -1][dir];
-      int dy = [1, 1, 0, -1, -1, -1, 0, 1][dir];
+    for (String palabra in palabrasEncontradas) {
+      for (int dir = 0; dir < 8; dir++) {
+        int dx = [0, 1, 1, 1, 0, -1, -1, -1][dir];
+        int dy = [1, 1, 0, -1, -1, -1, 0, 1][dir];
 
-      for (int i = 0; i < palabra.length; i++) {
-        int startX = row - i * dx;
-        int startY = col - i * dy;
+        for (int i = 0; i < palabra.length; i++) {
+          int startX = row - i * dx;
+          int startY = col - i * dy;
+          int endX = startX + (palabra.length - 1) * dx;
+          int endY = startY + (palabra.length - 1) * dy;
 
-        int endX = startX + (palabra.length - 1) * dx;
-        int endY = startY + (palabra.length - 1) * dy;
+          if (startX < 0 || startX >= gridSize || startY < 0 || startY >= gridSize) continue;
+          if (endX < 0 || endX >= gridSize || endY < 0 || endY >= gridSize) continue;
 
-        if (startX < 0 || startX >= gridSize || startY < 0 || startY >= gridSize) continue;
-        if (endX < 0 || endX >= gridSize || endY < 0 || endY >= gridSize) continue;
-
-        bool match = true;
-        for (int j = 0; j < palabra.length; j++) {
-          int x = startX + j * dx;
-          int y = startY + j * dy;
-          if (grid[x][y] != palabra[j]) {
-            match = false;
-            break;
-          }
-        }
-
-        if (match) {
-          // Verificamos si esta celda forma parte de la palabra
+          bool match = true;
           for (int j = 0; j < palabra.length; j++) {
             int x = startX + j * dx;
             int y = startY + j * dy;
-            if (x == row && y == col) return true;
+            if (grid[x][y] != palabra[j]) {
+              match = false;
+              break;
+            }
+          }
+
+          if (match) {
+            for (int j = 0; j < palabra.length; j++) {
+              int x = startX + j * dx;
+              int y = startY + j * dy;
+              if (x == row && y == col) return true;
             }
           }
         }
@@ -178,18 +202,19 @@ class _SopaDeLetrasPageState extends State<SopaDeLetrasPage> {
     return false;
   }
 
-
-
   @override
   void dispose() {
     validacionTimer?.cancel();
+    _player.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sopa de Letras - ${widget.asignatura}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      appBar: AppBar(
+        title: Text('Sopa de Letras - ${widget.asignatura}',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
       ),
@@ -241,9 +266,10 @@ class _SopaDeLetrasPageState extends State<SopaDeLetrasPage> {
                 );
               }).toList(),
             ),
-          )
+          ),
         ],
       ),
+      bottomNavigationBar: const CustomBottomNavBar(selectedMenu: MenuState.game),
     );
   }
 }

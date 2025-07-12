@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/theme.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ConfiguracionPage extends StatefulWidget {
   const ConfiguracionPage({Key? key}) : super(key: key);
@@ -10,15 +11,12 @@ class ConfiguracionPage extends StatefulWidget {
   State<ConfiguracionPage> createState() => _ConfiguracionPageState();
 }
 
-
 class _ConfiguracionPageState extends State<ConfiguracionPage> {
   final ThemeService _themeService = ThemeService();
   bool isDark = Get.isDarkMode;
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Configuración", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -71,16 +69,16 @@ class _ConfiguracionPageState extends State<ConfiguracionPage> {
                       onTap: () => Navigator.pushNamed(context, '/agregar_asignatura'),
                     ),
                     SwitchListTile(
-                        secondary: const Icon(Icons.dark_mode),
-                        title: const Text('Activar Modo Oscuro'),
-                        value: isDark,
-                        onChanged: (value) {
-                          setState(() {
-                            isDark = value;
-                            _themeService.switchTheme(value);
-                          });
-                        },
-                      ),
+                      secondary: const Icon(Icons.dark_mode),
+                      title: const Text('Activar Modo Oscuro'),
+                      value: isDark,
+                      onChanged: (value) {
+                        setState(() {
+                          isDark = value;
+                          _themeService.switchTheme(value);
+                        });
+                      },
+                    ),
                     ListTile(
                       leading: const Icon(Icons.info_outline),
                       title: const Text("Créditos"),
@@ -98,6 +96,16 @@ class _ConfiguracionPageState extends State<ConfiguracionPage> {
                             ],
                           ),
                         );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.support_agent),
+                      title: const Text("Soporte por WhatsApp"),
+                      onTap: () async {
+                        final url = Uri.parse("https://wa.me/573217832643?text=Necesito%20ayuda%20con%20la%20aplicación");
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        }
                       },
                     ),
                   ],

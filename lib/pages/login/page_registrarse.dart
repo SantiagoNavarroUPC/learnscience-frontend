@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
-import 'package:flutter_application/models/usuario.dart';
+import 'package:flutter_application/models/Usuario.dart';
+import 'package:flutter_application/models/usuario.dart' hide UsuarioModel;
 import 'package:get/get.dart';
 import '../../controllers/controller_usuario.dart';
 

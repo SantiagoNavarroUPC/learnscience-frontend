@@ -1,111 +1,93 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/constants.dart';
-import 'package:flutter_application/controllers/controller_persona.dart';
-import 'package:flutter_application/models/persona.dart';
+import 'package:flutter_application/controllers/controller_usuario.dart';
+import 'package:flutter_application/models/Persona.dart';
+import 'package:flutter_application/models/Usuario.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+class ListaUsuariosScreen extends StatelessWidget {
+  final UsuarioController usuarioController = Get.put(UsuarioController());
 
-
-class ListaPersonasScreen extends StatelessWidget {
-  final PersonaController personaController = Get.put(PersonaController());
-
-  ListaPersonasScreen({super.key});
+  ListaUsuariosScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    personaController.obtenerPersonas();
+    usuarioController.obtenerUsuarios();
 
     return Scaffold(
-      appBar: AppBar(title: const Text(
+      appBar: AppBar(
+        title: const Text(
           'Usuarios Activos',
-          style: TextStyle(
-            fontSize: 20, 
-            fontWeight: FontWeight.bold
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/home");
-            },
-          ),
-        ],
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Stack(
             children: [
-              Positioned(
-                bottom: -150,
-                left: 230,
-                child: Container(
-                  width: 300,
-                  height: 250,
-                  decoration: BoxDecoration(
-                    color: gColorTheme1_700.withOpacity(0.8),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: -150,
-                right: 230,
-                child: Container(
-                  width: 300,
-                  height: 250,
-                  decoration: BoxDecoration(
-                    color: gColorTheme1_400.withOpacity(0.8),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
+              Positioned(bottom: -150, left: 230, child: _circuloFondo(gColorTheme1_700)),
+              Positioned(bottom: -150, right: 230, child: _circuloFondo(gColorTheme1_400)),
               Obx(() {
-                final personas = personaController.personas;
+                final usuarios = usuarioController.usuarios;
                 return RefreshIndicator(
-                  onRefresh: () async {
-                    await personaController.obtenerPersonas();
-                  },
-                  child: personas.isEmpty
-                      ? const Center(child: Text(''))
-                      : ListView.builder(
-                          itemCount: personas.length,
-                          itemBuilder: (context, index) {
-                            final persona = personas[index];
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: gColorTheme1_800,
-                                child: Text(
-                                  '${persona.nombre[0]}${persona.apellido[0]}',
-                                  style: const TextStyle(color: Colors.white),
+                  onRefresh: () async => await usuarioController.obtenerUsuarios(),
+                  child: ListView.builder(
+                    itemCount: usuarios.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == usuarios.length) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: GestureDetector(
+                            onTap: () async {
+                              final url = Uri.parse("https://wa.me/573217832643?text=Necesito%20ayuda%20debo%20ajustar%20un%20usuario");
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url);
+                              }
+                            },
+                            child: const Center(
+                              child: Text(
+                                "Cualquier Soporte, Contáctanos por WhatsApp",
+                                style: TextStyle(
+                                  color: gColorTheme1_700,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                              title: Text('${persona.nombre} ${persona.apellido}'),
-                              subtitle: Text('Cédula: ${persona.cedula}'),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.edit, color: gColorTheme1_800),
-                                    onPressed: () {
-                                      // Acción para editar la persona
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete, color: gColorTheme1_800),
-                                    onPressed: () async {
-                                    },
-                                  ),
-                                ],
-                              ),
-                              onTap: () {
-                                _showPersonDetails(context, persona);
-                              },
-                            );
-                          },
+                            ),
+                          ),
+                        );
+                      }
+
+                      final usuario = usuarios[index];
+                      final tienePersona = usuario.personas != null && usuario.personas!.isNotEmpty;
+                      final persona = tienePersona ? usuario.personas![0] : null;
+
+                      return ListTile(
+                        leading: _buildAvatar(usuario, persona),
+                        title: Text(
+                          tienePersona
+                              ? "${persona!.nombre} ${persona.apellido}"
+                              : "Falta registrarse",
+                          style: TextStyle(
+                            color: tienePersona ? Colors.black : Colors.red,
+                            fontWeight: tienePersona ? FontWeight.normal : FontWeight.bold,
+                          ),
                         ),
+                        subtitle: Text(usuario.correo),
+                        onTap: () {
+                          if (tienePersona) {
+                            _mostrarDetallesPersona(context, persona!);
+                          } else {
+                            _mostrarAlertaPerfilIncompleto(context);
+                          }
+                        },
+                      );
+                    },
+                  ),
                 );
               }),
             ],
@@ -115,39 +97,84 @@ class ListaPersonasScreen extends StatelessWidget {
     );
   }
 
-  void _showPersonDetails(BuildContext context, PersonaModel persona) {
+  Widget _buildAvatar(UsuarioModel usuario, PersonaModel? persona) {
+    if (persona != null && persona.foto != null && persona.foto!.isNotEmpty) {
+      return CircleAvatar(
+        backgroundImage: NetworkImage(persona.foto!),
+        backgroundColor: Colors.grey[200],
+      );
+    }
+
+    String iniciales;
+
+    if (persona != null) {
+      iniciales = "${persona.nombre[0]}${persona.apellido[0]}";
+    } else {
+      iniciales = usuario.correo.substring(0, 2).toUpperCase();
+    }
+
+    return CircleAvatar(
+      backgroundColor: gColorTheme1_800,
+      child: Text(
+        iniciales,
+        style: const TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _circuloFondo(Color color) {
+    return Container(
+      width: 300,
+      height: 250,
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.8),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+
+  void _mostrarDetallesPersona(BuildContext context, PersonaModel persona) {
     showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Detalles de la Persona',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              const SizedBox(height: 16),
-              Text('Cédula: ${persona.cedula}'),
-              Text('Nombre: ${persona.nombre}'),
-              Text('Apellido: ${persona.apellido}'),
-              Text('Edad: ${persona.edad}'),
-              Text('Teléfono: ${persona.telefono}'),
-              Text('Dirección: ${persona.direccion}'),
-              Text('Activo: ${persona.eliminado == true ? 'No' : 'Sí'}'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context); // Cierra el BottomSheet
-                },
-                child: const Text('Cerrar'),
-              ),
-            ],
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Detalles de la Persona', style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 16),
+            Text('Nombre: ${persona.nombre}'),
+            Text('Apellido: ${persona.apellido}'),
+            Text('Edad: ${persona.edad}'),
+            Text('Teléfono: ${persona.telefono}'),
+            Text('Dirección: ${persona.direccion}'),
+            Text('Activo: ${persona.eliminado == true ? 'No' : 'Sí'}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cerrar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _mostrarAlertaPerfilIncompleto(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Perfil Incompleto'),
+        content: const Text('Deberías completar tu perfil para acceder a más funcionalidades.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
+

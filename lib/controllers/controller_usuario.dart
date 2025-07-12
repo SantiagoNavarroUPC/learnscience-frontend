@@ -1,5 +1,5 @@
+import 'package:flutter_application/models/Usuario.dart';
 import 'package:get/get.dart';
-import '../models/usuario.dart';
 import '../requests/request_usuario.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -39,24 +39,35 @@ class UsuarioController extends GetxController {
   }
 
 
-  Future<bool> registrarUsuario(UsuarioModel usuario) async {
-  isLoading.value = true;
-  try {
-    final registrado = await _usuarioService.registrarUsuario(usuario);
-    if (registrado) {
-      errorMessage.value = 'Usuario registrado con éxito';
-      return true;
-    } else {
-      errorMessage.value = 'Error al registrar usuario';
+    Future<bool> registrarUsuario(UsuarioModel usuario) async {
+    isLoading.value = true;
+    try {
+      final registrado = await _usuarioService.registrarUsuario(usuario);
+      if (registrado) {
+        errorMessage.value = 'Usuario registrado con éxito';
+        return true;
+      } else {
+        errorMessage.value = 'Error al registrar usuario';
+        return false;
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
       return false;
+    } finally {
+      isLoading.value = false;
     }
-  } catch (e) {
-    errorMessage.value = e.toString();
-    return false;
-  } finally {
-    isLoading.value = false;
   }
-}
+
+  var usuarios = <UsuarioModel>[].obs;
+
+  Future<void> obtenerUsuarios() async {
+    try {
+      final resultado = await _usuarioService.getUsuarios();
+      usuarios.assignAll(resultado);
+    } catch (e) {
+      print("Error al obtener usuarios: $e");
+    }
+  }
 
 
 

@@ -10,6 +10,7 @@ class Keyboard extends StatelessWidget {
   const Keyboard({super.key, 
     required this.alphabets,
     required this.onLetterPressed,
+    
     required this.selectedLetters,
   });
 

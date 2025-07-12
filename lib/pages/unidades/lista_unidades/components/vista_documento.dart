@@ -3,6 +3,7 @@ import 'package:flutter_application/constants.dart';
 import 'package:get/get.dart';
 import 'package:pdfx/pdfx.dart';
 
+
 class PDFViewPage extends StatefulWidget {
   final String filePath;
 
@@ -13,14 +14,27 @@ class PDFViewPage extends StatefulWidget {
 }
 
 class _PDFViewPageState extends State<PDFViewPage> {
-  PdfController? pdfController;
+  late PdfControllerPinch pdfController;
+  double _currentZoom = 1.0;
 
   @override
   void initState() {
     super.initState();
-    pdfController = PdfController(
+    pdfController = PdfControllerPinch(
       document: PdfDocument.openFile(widget.filePath),
     );
+  }
+
+  void _zoomIn() {
+    setState(() {
+      _currentZoom += 0.2;
+    });
+  }
+
+  void _zoomOut() {
+    setState(() {
+      _currentZoom = (_currentZoom - 0.2).clamp(1.0, 3.0);
+    });
   }
 
   @override
@@ -29,27 +43,37 @@ class _PDFViewPageState extends State<PDFViewPage> {
       appBar: AppBar(
         title: const Text(
           'Visor de material educativo',
-          style: TextStyle(
-            fontSize: 20, 
-            fontWeight: FontWeight.bold
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        centerTitle: true, // Esto centra el título
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.zoom_out),
+            onPressed: _zoomOut,
+          ),
+          IconButton(
+            icon: const Icon(Icons.zoom_in),
+            onPressed: _zoomIn,
+          ),
+        ],
       ),
-      body: pdfController == null
-          ? const Center(child: CircularProgressIndicator())
-          : PdfView(
-              controller: pdfController!,
-              onDocumentLoaded: (info) {
-                Get.snackbar(
-                  'Documento Cargado',
-                  'Número de páginas: ${info.pagesCount}',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: gColorTheme1_900,
-                  colorText: Colors.white,
-                );
-              },
-            ),
+      body: Transform.scale(
+        scale: _currentZoom,
+        alignment: Alignment.center,
+        child: PdfViewPinch(
+          controller: pdfController,
+          padding: 10,
+          onDocumentLoaded: (info) {
+            Get.snackbar(
+              'Documento Cargado',
+              'Número de páginas: ${info.pagesCount}',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: gColorTheme1_900,
+              colorText: Colors.white,
+            );
+          },
+        ),
+      ),
     );
   }
 }

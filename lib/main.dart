@@ -23,6 +23,8 @@ import 'package:flutter_application/pages/home_teacher/page_home_profesor.dart';
 import 'package:flutter_application/pages/home_student/page_home_estudiante.dart';
 import 'package:flutter_application/pages/juegos/ahorcado/ahorcado.dart';
 import 'package:flutter_application/pages/juegos/lista_juegos/page_lista_juegos.dart';
+import 'package:flutter_application/pages/juegos/memograma/memograma.dart';
+import 'package:flutter_application/pages/juegos/relaciona_conceptos/page_relaciona_conceptos.dart';
 import 'package:flutter_application/pages/juegos/sopa_de_letras/sopa_de_letras.dart';
 import 'package:flutter_application/pages/login/page_login.dart';
 import 'package:flutter_application/pages/login/page_registrarse.dart';
@@ -85,7 +87,7 @@ class MyApp extends StatelessWidget {
         "/usuario": (context) => const RegistroPersonaScreen(),
         "/login": (context) => const LoginScreen(),
         "/registrarse": (context) => const RegistrarUsuarioScreen(),
-        "/usuarios": (context) => ListaPersonasScreen(),
+        "/usuarios": (context) => ListaUsuariosScreen(),
         "/onboarding": (context) => const Onboarding(),
         "/start": (context) => const StartApp(),
         "/menu_estudiante": (context) => const HomeStudent(),
@@ -106,6 +108,8 @@ class MyApp extends StatelessWidget {
         "/videojuegos": (context) => const ListaVideojuegosPage(materiaEstudiante: ''),
         "/juego_ahorcado": (context) => const AhorcadoApp(area: '',),
         "/sopa_de_letras": (context) => const SopaDeLetrasPage(asignatura: '',),
+        "/memorama": (context) => const JuegoMemoramaPage(asignatura: '',),
+        "/relaciona_conceptos": (context) => const JuegoRelacionarPage(asignatura: '',),
         "/configuracion": (context) => const ConfiguracionPage(),
         "/agregar_asignatura": (context) => const AgregarAsignaturasPage (),
         "/listar_calificaciones": (context) => const ListaCalificacionesTotalesPage(),

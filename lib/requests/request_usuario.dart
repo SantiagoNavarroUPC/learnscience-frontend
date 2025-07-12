@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:flutter_application/models/Usuario.dart';
 import 'package:http/http.dart' as http;
-import '../models/usuario.dart';
+
 
 class UsuarioService {
   final String baseUrl = "http://apirestdatos00.somee.com/api/Usuario";
 
+  
   Future<UsuarioModel?> loginUsuario(UsuarioModel usuario) async {
     final usuarioJson = jsonEncode(usuario.toJson());
     final response = await http.post(
@@ -65,6 +67,25 @@ class UsuarioService {
       return data['mensaje'] == 'ok';
     } else {
       throw Exception('Error al eliminar usuario');
+    }
+  }
+
+  Future<List<UsuarioModel>> getUsuarios() async {
+    final url = Uri.parse("$baseUrl/listaUsuarios");
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List<UsuarioModel> lista = [];
+
+      for (var item in data["response"]) {
+        lista.add(UsuarioModel.fromJson(item));
+      }
+
+      return lista;
+    } else {
+      throw Exception("Error al cargar usuarios");
     }
   }
 }

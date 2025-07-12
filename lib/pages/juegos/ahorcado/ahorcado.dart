@@ -11,10 +11,10 @@ import 'package:flutter_application/pages/juegos/ahorcado/components/figura_ahor
 import 'package:flutter_application/pages/juegos/ahorcado/components/letter_grid.dart';
 import 'package:flutter_application/pages/juegos/ahorcado/components/teclado.dart';
 import 'package:get/get.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class AhorcadoApp extends StatefulWidget {
   final String area;
-  
 
   const AhorcadoApp({super.key, required this.area});
 
@@ -22,10 +22,9 @@ class AhorcadoApp extends StatefulWidget {
   State<AhorcadoApp> createState() => _AhorcadoAppState();
 }
 
-
 class _AhorcadoAppState extends State<AhorcadoApp> {
   final UsuarioController usuarioController = Get.find<UsuarioController>();
-  
+
   String? areaSeleccionada;
   String word = '';
   List<String> alphabets = List.generate(26, (index) => String.fromCharCode(index + 65));
@@ -36,24 +35,30 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
   Timer? _timer;
   int _remainingTime = 30;
   String hint = '';
+  late AudioPlayer _player;
 
   final List<String> areasDisponibles = ['biologia', 'quimica', 'fisica'];
 
   @override
   void initState() {
     super.initState();
+    _player = AudioPlayer();
     areaSeleccionada = areasDisponibles.contains(widget.area)
         ? widget.area
         : areasDisponibles.first;
 
     loadJsonData();
-}
-
+  }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _player.dispose();
     super.dispose();
+  }
+
+  Future<void> _reproducirSonido(String nombre) async {
+    await _player.play(AssetSource('sounds/$nombre.mp3'));
   }
 
   void startGame() {
@@ -88,6 +93,7 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
           gameLost = true;
           gameStarted = false;
         });
+        _reproducirSonido('reiniciar');
         showGameResultDialog('Perdiste', 'La palabra era: $word');
       } else {
         setState(() {
@@ -123,7 +129,7 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
     );
   }
 
-  void updateGameState() {
+  void updateGameState() async {
     if (!gameStarted) return;
 
     if (Game.tries >= 6 && !gameLost) {
@@ -132,6 +138,7 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
         gameStarted = false;
       });
       _timer?.cancel();
+      await _reproducirSonido('reiniciar');
       showGameResultDialog('Perdiste', 'La palabra era: $word');
     } else if (word.split('').every((char) => Game.selectedChar.contains(char)) && !gameWon) {
       setState(() {
@@ -139,6 +146,7 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
         gameStarted = false;
       });
       _timer?.cancel();
+      await _reproducirSonido('nivel_completado');
       showGameResultDialog('¡Ganaste!', '¡Felicidades! Has adivinado la palabra.');
     }
   }
@@ -218,12 +226,21 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
                     HangmanFigure(tries: Game.tries),
                     Keyboard(
                       alphabets: alphabets,
-                      onLetterPressed: (letter) {
-                        setState(() {
-                          Game.selectedChar.add(letter);
-                          if (!word.contains(letter)) Game.tries++;
+                      onLetterPressed: (letter) async {
+                        if (!Game.selectedChar.contains(letter)) {
+                          setState(() {
+                            Game.selectedChar.add(letter);
+                            if (!word.contains(letter)) Game.tries++;
+                          });
+
+                          if (word.contains(letter)) {
+                            await _reproducirSonido("correcto");
+                          } else {
+                            await _reproducirSonido("error");
+                          }
+
                           updateGameState();
-                        });
+                        }
                       },
                       selectedLetters: List.from(Game.selectedChar),
                     ),
@@ -235,6 +252,7 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
     );
   }
 }
+
 
 
 

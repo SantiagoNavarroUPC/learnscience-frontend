@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/components/coustom_bottom_nav_bar.dart';
 import 'package:flutter_application/constants.dart';
 import 'package:flutter_application/controllers/controller_usuario.dart';
+import 'package:flutter_application/enums.dart';
 import 'package:flutter_application/pages/juegos/ahorcado/ahorcado.dart';
+import 'package:flutter_application/pages/juegos/memograma/memograma.dart';
+import 'package:flutter_application/pages/juegos/relaciona_conceptos/page_relaciona_conceptos.dart';
 import 'package:flutter_application/pages/juegos/sopa_de_letras/sopa_de_letras.dart';
 import 'package:get/get.dart';
 
@@ -33,6 +37,16 @@ class _ListaVideojuegosPageState extends State<ListaVideojuegosPage> {
       'imagen': 'sopaletras.png',
     },
     {
+      'nombre': 'Memograma',
+      'descripcion': 'Encuentra las parejas de imágenes en el menor tiempo posible.',
+      'imagen': 'memograma.png',
+    },
+    {
+      'nombre': 'Relacionar Conceptos',
+      'descripcion': 'Une los conceptos con la palabra correcta antes de que se acabe el tiempo.',
+      'imagen': 'relacionar.png',
+    },
+    {
       'nombre': 'Más Juegos',
       'descripcion': 'Explora y juega más juegos educativos.',
       'imagen': 'mas_juegos.png',
@@ -52,6 +66,25 @@ class _ListaVideojuegosPageState extends State<ListaVideojuegosPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            final usuario = usuarioController.usuario.value!;
+            if (usuario.tipo == 'profesor') {
+              Get.offNamed("/menu_profesor");
+            } else if (usuario.tipo == 'estudiante') {
+              Get.offNamed("/menu_estudiante");
+            } else {
+              Get.snackbar(
+                'Error',
+                'Tipo de usuario desconocido',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: gColorThemeError,
+                colorText: Colors.white,
+              );
+            }
+          },
+        ),
         title: const Text(
           'Videojuegos Educativos',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -63,7 +96,7 @@ class _ListaVideojuegosPageState extends State<ListaVideojuegosPage> {
         builder: (context, constraints) {
           return Stack(
             children: [
-              // Círculos de fondo
+              // Círculos decorativos de fondo
               Positioned(
                 bottom: -150,
                 left: 230,
@@ -138,19 +171,23 @@ class _ListaVideojuegosPageState extends State<ListaVideojuegosPage> {
                                 context,
                                 MaterialPageRoute(builder: (context) => SopaDeLetrasPage(asignatura: area)),
                               );
+                            } else if (juego['nombre'] == 'Memograma') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => JuegoMemoramaPage(asignatura: area)),
+                              );
+                            } else if (juego['nombre'] == 'Relacionar Conceptos') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => JuegoRelacionarPage(asignatura: area)),
+                              );
                             } else if (juego['nombre'] == 'Más Juegos') {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Próximamente'),
-                                  content: const Text('Estamos trabajando en eso.'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('Aceptar'),
-                                    ),
-                                  ],
-                                ),
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Más juegos próximamente')),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Juego no implementado: ${juego['nombre']}')),
                               );
                             }
                           },
