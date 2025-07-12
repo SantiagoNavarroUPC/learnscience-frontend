@@ -1,16 +1,65 @@
-# flutter_application
+# LearnScience App
 
-A new Flutter project.
+Aplicación educativa desarrollada en Flutter para apoyar el aprendizaje de estudiantes mediante juegos, evaluaciones, y materiales interactivos.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🌍 Tecnologías Utilizadas
 
-A few resources to get you started if this is your first Flutter project:
+- **Flutter**: Framework principal de desarrollo de la interfaz.
+- **GetX**: Para manejo de estado y navegación.
+- **Firebase Storage**: Almacenamiento de archivos multimedia (imágenes y sonidos).
+- **SQL Server (API)**: Base de datos para usuarios, calificaciones, y cuestionarios.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📂 Estructura del Proyecto
+
+```plaintext
+lib/
+├── components/         # Widgets reutilizables (botones, navbars, etc.)
+├── controllers/        # Controladores GetX para manejar lógica y estado
+├── models/             # Clases modelo para mapear los datos (Usuario, Persona, etc.)
+├── pages/              # Pantallas principales de la app
+├── requests/           # Clases de servicios para hacer peticiones HTTP
+├── constants.dart      # Colores, estilos, textos y rutas comunes
+├── enums.dart          # Enumeraciones usadas para estados y navegación
+├── main.dart           # Punto de entrada de la aplicación
+├── size_config.dart    # Utilidad para adaptar la UI según el tamaño de pantalla
+└── theme.dart          # Configuración de temas claros y oscuros
+```
+
+---
+
+## 🎮 Funcionalidades Principales
+
+- Inicio de sesión y registro de usuarios.
+- Juegos interactivos por asignatura:
+  - Juego del Ahorcado
+  - Juego de Relacionar Conceptos
+  - Memorama
+  - Sopa de Letras
+- Evaluaciones con calificaciones automáticas.
+- Configuraciones como tema oscuro y créditos.
+- Alerta de soporte por WhatsApp si se necesita ayuda.
+
+---
+
+## 💪 Contribuciones
+
+Cualquier colaboración es bienvenida. Puedes abrir un issue o un pull request. Para soporte directo, se incluye enlace a WhatsApp dentro de la app.
+
+---
+
+## 🚀 Autoría
+
+Realizado por **Santiago Navarro** y **Duvan Lozano**
+
+---
+
+## 📅 Estado del Proyecto
+
+En desarrollo ✅.
+
+Se están afinando niveles de dificultad en juegos, validaciones visuales, y animaciones. También se está integrando almacenamiento de progreso por usuario.
+
