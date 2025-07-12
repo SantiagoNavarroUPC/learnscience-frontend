@@ -4,7 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class VideoRequest {
+class VideoService {
   final String baseUrl = "http://apirestdatos00.somee.com/api/Videos";
   final box = GetStorage();
 
@@ -67,12 +67,14 @@ class VideoRequest {
       throw Exception('Error en la obtención de videos interactivos: $e');
     }
   }
-  Future<bool> actualizarVideo(VideoModel video) async {
+  Future<bool> actualizarEstadoVideo(int id, bool estadoActual) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/ActualizarVideo'),
+      Uri.parse('$baseUrl/ActualizarEstado/$id?estadoActual=$estadoActual'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(video.toJson()),
     );
+
     return response.statusCode == 200;
   }
+
+ 
 }

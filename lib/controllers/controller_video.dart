@@ -10,7 +10,7 @@ class VideoController extends GetxController {
   var hasError = false.obs; 
   var video = Rx<VideoModel?>(null);
 
-  final VideoRequest _videoService = VideoRequest();
+  final VideoService _videoService = VideoService();
 
   Future<bool> registrarVideo(Map<String, dynamic> videoData) async {
     isLoading.value = true;
@@ -35,7 +35,7 @@ class VideoController extends GetxController {
   Future<void> obtenerVideos() async {
     try {
       isLoading.value = true;
-      var listaVideos = await VideoRequest().obtenerVideos();
+      var listaVideos = await VideoService().obtenerVideos();
       videos.value = listaVideos;
     } catch (e) {
       Get.snackbar(
@@ -54,8 +54,8 @@ class VideoController extends GetxController {
     try {
       isLoading.value = true;
       hasError.value = false;
-      
-      var listaVideos = await VideoRequest().obtenerVideos();
+
+      var listaVideos = await VideoService().obtenerVideos();
       if (area != null) {
         listaVideos = listaVideos.where((video) => video.tipo == area).toList();
       }
@@ -81,8 +81,8 @@ class VideoController extends GetxController {
     try {
       isLoading.value = true;
       hasError.value = false;
-      
-      var listaVideos = await VideoRequest().obtenerVideosActivos();
+
+      var listaVideos = await VideoService().obtenerVideosActivos();
       if (area != null) {
         listaVideos = listaVideos.where((video) => video.tipo == area).toList();
       }
@@ -103,30 +103,31 @@ class VideoController extends GetxController {
       isLoading.value = false;
     }
   }
-  
+
   Future<bool> actualizarVideo(VideoModel video) async {
-    try {
-      isLoading.value = true;
-      bool success = await VideoRequest().actualizarVideo(video);
-      if (success) {
-        Get.snackbar(
-          'Éxito',
-          'Video actualizado correctamente',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: gColorTheme1_600,
-          colorText: Colors.white,
-        );
-      } else {
-        Get.snackbar(
-          'Error',
-          'No se pudo actualizar el video',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: gColorThemeError,
-          colorText: Colors.white,
-        );
-      }
-      return success;
-    } catch (e) {
+  try {
+    isLoading.value = true;
+    
+    // Se invierte el estado actual (lógica para alternar)
+    final nuevoEstado = !(video.eliminado ?? false);
+
+    final success = await VideoService().actualizarEstadoVideo(video.idVideo ?? 0, nuevoEstado);
+
+    if (success) {
+      // Actualizamos el modelo local si es necesario
+      video.eliminado = nuevoEstado;
+
+      Get.snackbar(
+        'Éxito',
+        'Estado del video actualizado correctamente',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: gColorTheme1_600,
+        colorText: Colors.white,
+      );
+    }
+
+    return success;
+  } catch (e) {
       Get.snackbar(
         'Error',
         'Ocurrió un error al intentar actualizar el video: $e',

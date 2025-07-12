@@ -6,7 +6,7 @@ import 'package:flutter_application/pages/juegos/ahorcado/ahorcado.dart';
 class LetterGrid extends StatelessWidget {
   final String word;
 
-  const LetterGrid({required this.word});
+  const LetterGrid({super.key, required this.word});
 
   @override
   Widget build(BuildContext context) {

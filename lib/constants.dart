@@ -70,3 +70,20 @@ OutlineInputBorder outlineInputBorder() {
     borderSide: const BorderSide(color: gTextColor),
   );
 }
+
+  final List<Map<String, dynamic>> colores = [
+  {'name': 'Red', 'color': gColorBanner3},
+  {'name': 'Blue', 'color': gColorBanner2},
+  {'name': 'Green', 'color': gColorBanner1},
+  {'name': 'Yellow', 'color': Colors.yellow},
+  {'name': 'Orange', 'color': Colors.orange},
+  {'name': 'Purple', 'color': Colors.purple},
+  {'name': 'Pink', 'color': Colors.pink},
+  {'name': 'Brown', 'color': Colors.brown},
+  {'name': 'Grey', 'color': Colors.grey},
+  {'name': 'Cyan', 'color': Colors.cyan},
+  {'name': 'Lime', 'color': Colors.lime},
+  {'name': 'Teal', 'color': Colors.teal},
+  {'name': 'Indigo', 'color': Colors.indigo},
+  {'name': 'Amber', 'color': Colors.amber}
+];

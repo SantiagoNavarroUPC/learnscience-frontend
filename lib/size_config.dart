@@ -1,3 +1,5 @@
+import 'dart:convert' show Utf8Decoder, Utf8Encoder;
+
 import 'package:flutter/material.dart';
 
 class SizeConfig {
@@ -28,3 +30,15 @@ double getProportionateScreenWidth(double inputWidth) {
   // 375 is the layout width that designer use
   return (inputWidth / 375.0) * screenWidth;
 }
+
+String removerTildes(String texto) {
+  const withTildes = 'áéíóúÁÉÍÓÚñÑ';
+  const withoutTildes = 'aeiouAEIOUnN';
+
+  for (int i = 0; i < withTildes.length; i++) {
+    texto = texto.replaceAll(withTildes[i], withoutTildes[i]);
+  }
+  return texto;
+}
+
+

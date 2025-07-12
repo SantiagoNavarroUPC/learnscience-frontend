@@ -3,7 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class UnidadRequest {
+class UnidadService {
   final String baseUrl = "http://apirestdatos00.somee.com/api/Unidad";
   final box = GetStorage();
 
@@ -49,12 +49,12 @@ class UnidadRequest {
       throw Exception('Error en la obtención de unidades: $e');
     }
   }
-  Future<bool> actualizarUnidad(UnidadModel unidad) async {
+  Future<bool> actualizarEstadoUnidad(int id, bool estadoActual) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/EditarUnidad'),
+      Uri.parse('$baseUrl/ActualizarEstado/$id?estadoActual=$estadoActual'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(unidad.toJson()),
     );
+
     return response.statusCode == 200;
   }
 }

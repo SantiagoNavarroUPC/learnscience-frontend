@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_application/controllers/controller_asignatura.dart';
 import 'dart:io';
 import 'package:flutter_application/controllers/controller_unidad.dart';
+import 'package:flutter_application/models/Asignatura.dart';
+import 'package:flutter_application/size_config.dart';
 import 'package:get/get.dart';
 import '../../../constants.dart';
 import '../../../controllers/controller_usuario.dart';
@@ -20,7 +23,24 @@ class _UnidadAddState extends State<UnidadAdd> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   File? _pdfFile;
-  String? _tipo;
+  String? _tipo; 
+  List<AsignaturaModel> _asignaturas = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarAsignaturas();
+  }
+
+  Future<void> _cargarAsignaturas() async {
+    final controller = Get.put(AsignaturaController());
+    final resultado = await controller.cargarAsignaturas();
+    setState(() {
+      _asignaturas = resultado;
+      _loading = false;
+    });
+  }
 
   UnidadController controllerUnidad = Get.find<UnidadController>();
   UsuarioController usuarioController = Get.find<UsuarioController>();
@@ -180,65 +200,48 @@ Widget build(BuildContext context) {
                       },
                     ),
                     const SizedBox(height: 16.0),
-                    DropdownButtonFormField<String>(
-                      value: _tipo,
-                      decoration: const InputDecoration(
-                        labelText: 'Tipo de Unidad',
-                        labelStyle: TextStyle(
-                          color: Colors.black, 
-                          fontWeight: FontWeight.normal,
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: gColorTheme1_900),
-                        ),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                      ),
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'biologia',
-                          child: Text(
-                            'Biología',
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black,
-                            ),
+                    _loading
+                    ? const CircularProgressIndicator()
+                    : DropdownButtonFormField<String>(
+                        value: _tipo,
+                        decoration: const InputDecoration(
+                          labelText: 'Asignatura',
+                          labelStyle: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: gColorTheme1_900),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black),
                           ),
                         ),
-                        DropdownMenuItem(
-                          value: 'quimica',
-                          child: Text(
-                            'Química',
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black,
+                        items: _asignaturas.map((asignatura) {
+                          return DropdownMenuItem<String>(
+                            value: removerTildes(asignatura.nombre).toLowerCase(),
+                            child: Text(
+                              asignatura.nombre ?? '',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                        ),
-                        DropdownMenuItem(
-                          value: 'fisica',
-                          child: Text(
-                            'Física',
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ],
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Por favor, selecciona el tipo de unidad';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        setState(() {
-                          _tipo = value;
-                        });
-                      },
-                    ),
+                          );
+                        }).toList(),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor, selecciona una asignatura';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            _tipo = value;
+                          });
+                        },
+                      ),   
+
                     const SizedBox(height: 16.0),
                     GestureDetector(
                       onTap: _pickFile,

@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:flutter_application/models/pregunta_video.dart';
+import 'package:flutter_application/models/PreguntaVideo.dart';
 import 'package:http/http.dart' as http;
 
-class PreguntaVideoRequest {
+class PreguntaVideoService {
   final String baseUrl = "http://apirestdatos00.somee.com/api/PreguntaVideos";
 
   Future<bool> registrarPreguntaVideo(Map<String, dynamic> preguntaData) async {
@@ -29,10 +29,10 @@ class PreguntaVideoRequest {
     }
   }
 
-  Future<List<PreguntaVideoModel>> obtenerPreguntasVideo() async {
+  Future<List<PreguntaVideoModel>> obtenerPreguntasVideo(int videoId) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/ListarPreguntasVideos'),
+        Uri.parse('$baseUrl/ListarPreguntasVideos/$videoId'),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -47,7 +47,6 @@ class PreguntaVideoRequest {
       throw Exception('Error en la obtención de preguntas de video: $e');
     }
   }
-
   Future<List<PreguntaVideoModel>> obtenerPreguntasVideoActivas() async {
     try {
       final response = await http.get(

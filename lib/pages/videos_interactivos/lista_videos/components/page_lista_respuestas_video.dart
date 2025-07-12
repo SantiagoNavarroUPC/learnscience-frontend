@@ -5,19 +5,24 @@ import 'package:get/get.dart';
 
 
 class PreguntasVideoPage extends StatelessWidget {
+  final int videoId;
   final PreguntaVideoController preguntaVideoController = Get.put(PreguntaVideoController());
+
+  PreguntasVideoPage({super.key, required this.videoId});
 
   @override
   Widget build(BuildContext context) {
-    preguntaVideoController.obtenerPreguntasVideo();
+  preguntaVideoController.obtenerPreguntasVideo(videoId);
+
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Respuestas de las preguntas de los videos',
+          'Respuestas de las preguntas',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
         centerTitle: true,
@@ -84,7 +89,7 @@ class PreguntasVideoPage extends StatelessWidget {
                             color: Colors.grey.withOpacity(0.3),
                             spreadRadius: 2,
                             blurRadius: 6,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
@@ -93,21 +98,10 @@ class PreguntasVideoPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Video Title
-                            Text(
-                              'Video: ${pregunta.idVideosObject?.nombre ?? "Sin nombre"}',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: gColorTheme1_700,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-
                             // User Email
                             Text(
                               'Correo del Usuario: ${pregunta.idUsuarioObject?.correo ?? "Sin correo"}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: gTextColor,
                               ),
@@ -142,7 +136,7 @@ class PreguntasVideoPage extends StatelessWidget {
       children: [
         Text(
           '$title:',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: gColorTheme1_700,

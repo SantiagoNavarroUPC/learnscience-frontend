@@ -1,4 +1,4 @@
-import 'package:flutter_application/models/pregunta_video.dart';
+import 'package:flutter_application/models/PreguntaVideo.dart';
 import 'package:flutter_application/requests/request_preguntas_video.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,7 @@ class PreguntaVideoController extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var hasError = false.obs;
-  final PreguntaVideoRequest _preguntaService = PreguntaVideoRequest();
+  final PreguntaVideoService _preguntaService = PreguntaVideoService();
 
   Future<bool> registrarPreguntaVideo(Map<String, dynamic> preguntaData) async {
     isLoading.value = true;
@@ -30,23 +30,23 @@ class PreguntaVideoController extends GetxController {
     
   }
 
-  Future<void> obtenerPreguntasVideo() async {
-    try {
-      isLoading.value = true;
-      var listaPreguntas = await _preguntaService.obtenerPreguntasVideo();
-      preguntas.value = listaPreguntas;
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'No se pudieron obtener las preguntas de video',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-    } finally {
-      isLoading.value = false;
-    }
+  Future<void> obtenerPreguntasVideo(int videoId) async {
+  try {
+    isLoading.value = true;
+    var listaPreguntas = await _preguntaService.obtenerPreguntasVideo(videoId);
+    preguntas.value = listaPreguntas;
+  } catch (e) {
+    Get.snackbar(
+      'Error',
+      'No se pudieron obtener las preguntas de video',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+  } finally {
+    isLoading.value = false;
   }
+}
 
   Future<void> obtenerPreguntasVideoActivas() async {
     try {
