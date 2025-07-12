@@ -152,24 +152,30 @@ class _AhorcadoAppState extends State<AhorcadoApp> {
   }
 
   void showGameResultDialog(String title, String content) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(title),
-            content: Text(content),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          );
-        },
-      );
-    });
-  }
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // <-- Esto impide cerrar el diálogo tocando fuera
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Aquí puedes reiniciar el juego si quieres
+                // startGame();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {

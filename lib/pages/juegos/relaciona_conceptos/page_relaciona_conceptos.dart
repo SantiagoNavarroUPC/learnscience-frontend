@@ -83,13 +83,11 @@ class _JuegoRelacionarPageState extends State<JuegoRelacionarPage> {
     final esConcepto1 = pares.any((e) => e.key == item1);
     final esConcepto2 = pares.any((e) => e.key == nuevoItem);
 
-    // Si los dos son del mismo tipo, simplemente reemplazamos selección
     if (esConcepto1 == esConcepto2) {
       setState(() => itemSeleccionado = nuevoItem);
       return;
     }
 
-    // Comparación sin importar el orden
     final concepto = esConcepto1 ? item1 : nuevoItem;
     final palabra = esConcepto1 ? nuevoItem : item1;
 
@@ -117,6 +115,7 @@ class _JuegoRelacionarPageState extends State<JuegoRelacionarPage> {
       player.play(AssetSource('sonidos/ganar.mp3'));
       showDialog(
         context: context,
+        barrierDismissible: false, // <- evita cerrar con toque fuera
         builder: (_) => AlertDialog(
           title: const Text('¡Felicidades!'),
           content: const Text('Has completado todos los niveles'),
@@ -143,6 +142,7 @@ class _JuegoRelacionarPageState extends State<JuegoRelacionarPage> {
     player.play(AssetSource('sonidos/perder.mp3'));
     showDialog(
       context: context,
+      barrierDismissible: false, // <- evita cerrar con toque fuera
       builder: (_) => AlertDialog(
         title: const Text('¡Tiempo agotado!'),
         content: const Text('Has perdido el juego.'),
@@ -195,7 +195,6 @@ class _JuegoRelacionarPageState extends State<JuegoRelacionarPage> {
           Expanded(
             child: Row(
               children: [
-                // Conceptos
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(8),
@@ -207,9 +206,7 @@ class _JuegoRelacionarPageState extends State<JuegoRelacionarPage> {
                       final estaSeleccionado = itemSeleccionado == concepto;
 
                       return GestureDetector(
-                        onTap: seleccionado
-                            ? null
-                            : () => verificarEmparejamiento(concepto),
+                        onTap: seleccionado ? null : () => verificarEmparejamiento(concepto),
                         child: Card(
                           color: estaSeleccionado ? Colors.amber : color,
                           elevation: 2,
@@ -225,7 +222,6 @@ class _JuegoRelacionarPageState extends State<JuegoRelacionarPage> {
                     },
                   ),
                 ),
-                // Palabras
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(8),
@@ -259,7 +255,6 @@ class _JuegoRelacionarPageState extends State<JuegoRelacionarPage> {
               ],
             ),
           ),
-          // Barra de progreso al final
           LinearProgressIndicator(value: progreso, minHeight: 10),
           const SizedBox(height: 20),
         ],
